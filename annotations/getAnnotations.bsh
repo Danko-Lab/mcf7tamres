@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+hgsql hg19 -N -e "select chrom,txStart,txEnd,name,score,strand,name2 from refGene" | sort-bed - | gzip > refGene.bed.gz
