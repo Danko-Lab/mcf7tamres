@@ -1,0 +1,34 @@
+#!/usr/bin/bash
+dP=../../RawSequenceFiles/mcf7tamRes
+swp=/workdir/mcf7-tmp
+mkdir $swp
+
+for i in $dP/*.bw
+do
+ name=`echo $i | cut -d \/ -f 5 | cut -d \. -f 1`
+ bigWigToBedGraph $dP/$i $swp/$name.bedGraph
+done
+
+bedtools unionbedg -i $swp/5089_5598_18730_H73KFGXX_MCF7_B7_BBCA_ATCACG_R1_plus.bedGraph \
+			$swp/5089_5598_18731_H73KFGXX_MCF7_G11_BBCA_CGATGT_R1_plus.bedGraph \
+			$swp/5089_5598_18732_H73KFGXX_MCF7_B7_TTAGGC_R1_plus.bedGraph \
+			$swp/5089_5598_18733_H73KFGXX_MCF7_G11_TGACCA_R1_plus.bedGraph \
+			$swp/5089_5598_18734_H73KFGXX_MCF7_C11_ACAGTG_R1_plus.bedGraph \
+			$swp/5089_5598_18735_H73KFGXX_MCF7_H9_GCCAAT_R1_plus.bedGraph \
+						| awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4+$5+$6+$7+$8+$9}' > mcf7.plus.bedGraph
+
+bedtools unionbedg -i $swp/5089_5598_18730_H73KFGXX_MCF7_B7_BBCA_ATCACG_R1_minus.bedGraph \
+                        $swp/5089_5598_18731_H73KFGXX_MCF7_G11_BBCA_CGATGT_R1_minus.bedGraph \
+                        $swp/5089_5598_18732_H73KFGXX_MCF7_B7_TTAGGC_R1_minus.bedGraph \
+                        $swp/5089_5598_18733_H73KFGXX_MCF7_G11_TGACCA_R1_minus.bedGraph \
+                        $swp/5089_5598_18734_H73KFGXX_MCF7_C11_ACAGTG_R1_minus.bedGraph \
+                        $swp/5089_5598_18735_H73KFGXX_MCF7_H9_GCCAAT_R1_minus.bedGraph \
+                                                | awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4+$5+$6+$7+$8+$9}' > mcf7.minus.bedGraph
+
+
+CHINFO=/local/storage/data/hg19/hg19.chromInfo
+bedGraphToBigWig mcf7.plus.bedGraph $CHINFO mcf7.plus.bw
+bedGraphToBigWig mcf7.minus.bedGraph $CHINFO mcf7.minus.bw
+
+rm *.bedGraph 
+rm -Rf $swp
