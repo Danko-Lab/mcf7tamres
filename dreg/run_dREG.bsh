@@ -25,6 +25,6 @@ else
 	ncores=1
 fi
 
-echo "Using: R --vanilla --slave --args $bwPL $bwMN $out.bedgraph $SVM $ncores < run_dREG.R"
-R --vanilla --slave --args $bwPL $bwMN $out.bedgraph $SVM $ncores < run_dREG.R
+echo "Using: R --no-save --slave --args $bwPL $bwMN $out.bedgraph $SVM $ncores < run_dREG.R"
+R --no-save --slave --args $bwPL $bwMN $out.bedgraph $SVM $ncores < run_dREG.R
 
