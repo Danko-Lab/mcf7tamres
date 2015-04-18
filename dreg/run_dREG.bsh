@@ -28,3 +28,9 @@ fi
 echo "Using: R --no-save --slave --args $bwPL $bwMN $out.bedgraph $SVM $ncores < run_dREG.R"
 R --no-save --slave --args $bwPL $bwMN $out.bedgraph $SVM $ncores < run_dREG.R
 
+## Added a few lines that further process dREG sites. 
+bedGraphToBigWig $out.bedgraph /local/storage/data/hg19/hg19.chromInfo $out\_dREG.bw
+gzip $out.bedgraph
+bash writeBed.bsh 0.75 $out.bedgraph.gz
+
+
