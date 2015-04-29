@@ -25,38 +25,58 @@ doit <- function(bed, stp, halfWindow, ...) {
 	bed_rev <- bed; bed_rev[bed[,6] == "+",6] <- "-"; bed_rev[bed[,6] == "-",6] <- "+"
 
 	B7_meta_p <- metaprofile.bigWig(bed, B7_pl, B7_mn, step=stp)
-	B7_meta_m <- metaprofile.bigWig(bed_rev, B7_pl, B7_mn, step=stp)
+	B7_meta_m <- rev(metaprofile.bigWig(bed_rev, B7_pl, B7_mn, step=stp))
 
         C11_meta_p <- metaprofile.bigWig(bed, C11_pl, C11_mn, step=stp)
-        C11_meta_m <- metaprofile.bigWig(bed_rev, C11_pl, C11_mn, step=stp)
+        C11_meta_m <- rev(metaprofile.bigWig(bed_rev, C11_pl, C11_mn, step=stp))
 
         G11_meta_p <- metaprofile.bigWig(bed, G11_pl, G11_mn, step=stp)
-        G11_meta_m <- metaprofile.bigWig(bed_rev, G11_pl, G11_mn, step=stp)
+        G11_meta_m <- rev(metaprofile.bigWig(bed_rev, G11_pl, G11_mn, step=stp))
 
         H9_meta_p <- metaprofile.bigWig(bed, H9_pl, H9_mn, step=stp)
-        H9_meta_m <- metaprofile.bigWig(bed_rev, H9_pl, H9_mn, step=stp)
+        H9_meta_m <- rev(metaprofile.bigWig(bed_rev, H9_pl, H9_mn, step=stp))
 
         B7b_meta_p <- metaprofile.bigWig(bed, B7_pl, B7_mn, step=stp)
-        B7b_meta_m <- metaprofile.bigWig(bed_rev, B7_pl, B7_mn, step=stp)
+        B7b_meta_m <- rev(metaprofile.bigWig(bed_rev, B7_pl, B7_mn, step=stp))
 
         G11b_meta_p <- metaprofile.bigWig(bed, G11_BBCA_pl, G11_BBCA_mn, step=stp)
-        G11b_meta_m <- metaprofile.bigWig(bed_rev, G11_BBCA_pl, G11_BBCA_mn, step=stp)
+        G11b_meta_m <- rev(metaprofile.bigWig(bed_rev, G11_BBCA_pl, G11_BBCA_mn, step=stp))
 
-        N = length(H_meta_p$middle)
-        x = 1:N*stp ## ((1:N) - N/2)* stp
-        ylim=c(-1*max(c(B7_meta_m$top, C11_meta_m$top, G11_meta_m$top, H9_meta_m$top, B7b_meta_m$top, G11b_meta_m$top)), 
-				max(B7_meta_p$top, C11_meta_p$top, G11_meta_p$top, H9_meta_p$top, B7b_meta_p$top, G11b_meta_p$top))
+        N = length(B7_meta_p$middle)
+        x = ((1:N) - N/2)* stp #1:N*stp
+        ylim=c(-1*max(c(B7_meta_m$middle, C11_meta_m$middle, G11_meta_m$middle, H9_meta_m$middle, B7b_meta_m$middle, G11b_meta_m$middle)), 
+				max(B7_meta_p$middle, C11_meta_p$middle, G11_meta_p$middle, H9_meta_p$middle, B7b_meta_p$middle, G11b_meta_p$middle))
 	
-	par(mfrow=c(1,6))
-	plot.metaprofile(B7_meta_p, minus.profile=B7_meta_m, X0=halfWindow/stp, ylim=ylim)
-        plot.metaprofile(C11_meta_p, minus.profile=C11_meta_m, X0=halfWindow/stp, ylim=ylim)
-        plot.metaprofile(G11_meta_p, minus.profile=G11_meta_m, X0=halfWindow/stp, ylim=ylim)
-        plot.metaprofile(H9_meta_p, minus.profile=H9_meta_m, X0=halfWindow/stp, ylim=ylim)
+	par(mfrow=c(1,2))
+	plot(-500, -500, ylim=ylim, xlim=c(min(x), max(x)), xlab= "Distance [bp]", ylab= "Signal.")
+	lines(x, B7_meta_p$middle, col="#C14F4D")
+	lines(x, -1*B7_meta_m$middle, col="#C14F4D")
+	lines(x, C11_meta_p$middle, col="dark red")
+	lines(x, -1*C11_meta_m$middle, col="dark red")
+        lines(x, G11_meta_p$middle, col="#7E75B1")
+        lines(x, -1*G11_meta_m$middle, col="#7E75B1")
+        lines(x, H9_meta_p$middle, col="dark blue")
+        lines(x, -1*H9_meta_m$middle, col="dark blue")
 
-#        plot.metaprofile(B7_meta_p, minus.profile=B7_meta_m, X0=halfWindow/stp, ylim=ylim)
-        plot.metaprofile(B7b_meta_p, minus.profile=B7b_meta_m, X0=halfWindow/stp, ylim=ylim)
-#        plot.metaprofile(G11_meta_p, minus.profile=G11_meta_m, X0=halfWindow/stp, ylim=ylim)
-        plot.metaprofile(G11b_meta_p, minus.profile=G11b_meta_m, X0=halfWindow/stp, ylim=ylim)
+        plot(-500, -500, ylim=ylim, xlim=c(min(x), max(x)), xlab= "Distance [bp]", ylab= "Signal.")
+        lines(x, B7_meta_p$middle, col="dark gray")
+        lines(x, -1*B7_meta_m$middle, col="dark gray")
+        lines(x, B7b_meta_p$middle, col="#98E676")
+        lines(x, -1*B7b_meta_m$middle, col="#98E676")
+        lines(x, G11_meta_p$middle, col="dark gray")
+        lines(x, -1*G11_meta_m$middle, col="dark gray")
+        lines(x, G11b_meta_p$middle, col="#9F97D4")
+        lines(x, -1*G11b_meta_m$middle, col="#9F97D4")
+
+# 	plot.metaprofile(B7_meta_p, minus.profile=B7_meta_m, X0=halfWindow/stp, ylim=ylim)
+#       plot.metaprofile(C11_meta_p, minus.profile=C11_meta_m, X0=halfWindow/stp, ylim=ylim)
+#       plot.metaprofile(G11_meta_p, minus.profile=G11_meta_m, X0=halfWindow/stp, ylim=ylim)
+#       plot.metaprofile(H9_meta_p, minus.profile=H9_meta_m, X0=halfWindow/stp, ylim=ylim)
+
+#       plot.metaprofile(B7_meta_p, minus.profile=B7_meta_m, X0=halfWindow/stp, ylim=ylim)
+#       plot.metaprofile(B7b_meta_p, minus.profile=B7b_meta_m, X0=halfWindow/stp, ylim=ylim)
+#       plot.metaprofile(G11_meta_p, minus.profile=G11_meta_m, X0=halfWindow/stp, ylim=ylim)
+#       plot.metaprofile(G11b_meta_p, minus.profile=G11b_meta_m, X0=halfWindow/stp, ylim=ylim)
 
         #plot.metaprofile(H_meta_p, minus.profile=H_meta_m, X0=halfWindow/stp, ylim=ylim)
 	#lines(x, C_meta_p$middle, col="#17b92b")
@@ -67,5 +87,5 @@ doit <- function(bed, stp, halfWindow, ...) {
 
 ## Read in BED files and print...
 erbs <- read.table("ERaBS.bed")
-doit(erbs, stp=25, halfWindow=2000)
+doit(erbs, stp=20, halfWindow=2000)
 

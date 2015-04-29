@@ -6,7 +6,7 @@ function getBound {
 
 BS=/local/storage/data/hg19/mcf7/ERaBS/ERBS.starch
 PEAKS=/local/storage/data/hg19/mcf7/eralpha_tf/GSM365926_ER_E2_peaks.hg19.bed
-THR=10
+THR=7
 
 getBound ERaBS.bed
  
