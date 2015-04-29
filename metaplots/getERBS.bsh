@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+
+function getBound {
+  bedmap --echo $BS | awk '($5 > '"$THR"'){print $0}' | bedmap --echo --indicator - $PEAKS | grep "|1" | sed "s/|1//g" > $1
+}
+
+BS=/local/storage/data/hg19/mcf7/ERaBS/ERBS.starch
+PEAKS=/local/storage/data/hg19/mcf7/eralpha_tf/GSM365926_ER_E2_peaks.hg19.bed
+THR=10
+
+getBound ERaBS.bed
+ 
