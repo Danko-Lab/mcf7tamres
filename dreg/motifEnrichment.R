@@ -19,11 +19,10 @@ tre_unc <- center_dREG_site(tre_unc, "mcf7.plus.bw", "mcf7.minus.bw", readThresh
 require(rtfbsdb)
 
 db.human <- CisBP.extdata("Homo_sapiens")
-tfs <- CisBP.find(db.human)
-
+tfs <- tfbs.createFromCisBP(db.human, file.bigwig.plus= "mcf7.plus.bw", file.bigwig.minus= "mcf7.minus.bw", file.gencode.gtf="/local/storage/data/hg19/all/gencode/gencode.v19.annotation.gtf.gz")
 tfs <- tfbs.getDistanceMatrix(tfs, ncores=25)
-tfs <- tfbs.getExpression(tfs, "mcf7.plus.bw", "mcf7.minus.bw")   ## Get expressed TFs ... 
+tfs <- tfbs.clusterMotifs(tfs, method="agnes", pdf.heatmap="motifs/MCF7.heatmap.pdf")
 
-tfs <- tfbs.clusterMotifs(tfs, method="agnes", pdf.heatmap="motifs/MCF7.heatmap.pdf", group.k= )
+save.image("MCF7db.RData")
 
 comparative_scanDb_rtfbs()
