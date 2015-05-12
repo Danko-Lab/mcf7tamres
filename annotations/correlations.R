@@ -28,8 +28,8 @@ C11_mn <- load.bigWig(paste(path, "sC11_mn.bw", sep=""))
 
 B7_BBCA_pl <- load.bigWig(paste(path,"sB7_bbca_pl.bw", sep=""))
 B7_BBCA_mn <- load.bigWig(paste(path,"sB7_bbca_mn.bw", sep=""))
-G11_BBCA_pl <- load.bigWig(paste(path,"sG11_bbca_pl.bw", sep=""))
-G11_BBCA_mn <- load.bigWig(paste(path,"sG11_bbca_mn.bw", sep=""))
+G11_BBCA_pl <- load.bigWig(paste(path,"rG11_bbca_pl.bw", sep=""))
+G11_BBCA_mn <- load.bigWig(paste(path,"rG11_bbca_mn.bw", sep=""))
 
 ## Count reads in each ...
 B7 <- bed6.region.bpQuery.bigWig(B7_pl, B7_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (B7_pl$basesCovered * B7_pl$mean + abs(B7_mn$basesCovered * B7_mn$mean)) * 1e6
