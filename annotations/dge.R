@@ -48,7 +48,7 @@ PVAL <- 0.01
 sampleID <- colnames(gene_body_counts)
 tamres   <- c("sen", "sen", "res", "res", "sen", "res")
 bbcatrt  <- c("u", "u", "u", "u", "t", "t")
-data.frame(sampleID, tamres, bbcatrt, cell)
+data.frame(sampleID, tamres, bbcatrt)
 
 #fitModel <- function() {
   design <- model.matrix(~tamres+bbcatrt)
