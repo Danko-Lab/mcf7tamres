@@ -17,12 +17,25 @@ tre_unc <- center_dREG_site(tre_unc, "mcf7.plus.bw", "mcf7.minus.bw", readThresh
 
 
 require(rtfbsdb)
+hg19 <- "/local/storage/data/hg19/hg19.2bit"
 
 db.human <- CisBP.extdata("Homo_sapiens")
 tfs <- tfbs.createFromCisBP(db.human, file.bigwig.plus= "mcf7.plus.bw", file.bigwig.minus= "mcf7.minus.bw", file.gencode.gtf="/local/storage/data/hg19/all/gencode/gencode.v19.annotation.gtf.gz")
 tfs <- tfbs.getDistanceMatrix(tfs, ncores=25)
-tfs <- tfbs.clusterMotifs(tfs, method="agnes", pdf.heatmap="motifs/MCF7.heatmap.pdf")
+clu <- tfbs.clusterMotifs(tfs, method="agnes", pdf.heatmap="motifs/MCF7.heatmap.pdf")
+
+for(i in c(5, 7, 8, 10)) {
+ motif_up <- tfbs.compareTFsite(tfs, hg19, tre_up, tre_unc, background.correction=TRUE, threshold=i)
+ motif_dn <- tfbs.compareTFsite(tfs, hg19, tre_dn, tre_unc, background.correction=TRUE, threshold=i)
+
+ print(paste("Log score: ",i,sep=""))
+
+ print("TRE UP in Tam Res.")
+ print(head(motif_up[motif_up$es.ratio>1,][order(motif_up$assoc.pvalue[motif_up$es.ratio>1]),], 10))
+
+ print("TRE DOWN in Tam Res.")
+ print(head(motif_dn[motif_dn$es.ratio>1,][order(motif_dn$assoc.pvalue[motif_dn$es.ratio>1]),], 10))
+}
 
 save.image("MCF7db.RData")
 
-comparative_scanDb_rtfbs()
