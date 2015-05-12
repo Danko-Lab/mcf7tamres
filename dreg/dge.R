@@ -6,21 +6,20 @@ tres <- read.table("mcf7_tamSR.bedgraph.bed.gz")
 ## Read in bigWigs.
 require(bigWig)
 
-path="/local/storage/projects/RawSequenceFiles/mcf7tamRes/"
+path="../data/"
+B7_pl <- load.bigWig(paste(path, "sB7_pl.bw", sep=""))
+B7_mn <- load.bigWig(paste(path, "sB7_mn.bw", sep=""))
+G11_pl <- load.bigWig(paste(path, "rG11_pl.bw", sep=""))
+G11_mn <- load.bigWig(paste(path, "rG11_mn.bw", sep=""))
+H9_pl <- load.bigWig(paste(path, "rH9_pl.bw", sep=""))
+H9_mn <- load.bigWig(paste(path, "rH9_mn.bw", sep=""))
+C11_pl <- load.bigWig(paste(path, "sC11_pl.bw", sep=""))
+C11_mn <- load.bigWig(paste(path, "sC11_mn.bw", sep=""))
 
-B7_pl <- load.bigWig(paste(path, "5089_5598_18732_H73KFGXX_MCF7_B7_TTAGGC_R1_plus.bw",sep=""))
-B7_mn <- load.bigWig(paste(path, "5089_5598_18732_H73KFGXX_MCF7_B7_TTAGGC_R1_minus.bw",sep=""))
-G11_pl <- load.bigWig(paste(path, "5089_5598_18733_H73KFGXX_MCF7_G11_TGACCA_R1_plus.bw", sep=""))
-G11_mn <- load.bigWig(paste(path, "5089_5598_18733_H73KFGXX_MCF7_G11_TGACCA_R1_minus.bw", sep=""))
-H9_pl <- load.bigWig(paste(path, "5089_5598_18735_H73KFGXX_MCF7_H9_GCCAAT_R1_plus.bw",sep=""))
-H9_mn <- load.bigWig(paste(path, "5089_5598_18735_H73KFGXX_MCF7_H9_GCCAAT_R1_minus.bw",sep=""))
-C11_pl <- load.bigWig(paste(path, "5089_5598_18733_H73KFGXX_MCF7_G11_TGACCA_R1_plus.bw",sep=""))
-C11_mn <- load.bigWig(paste(path, "5089_5598_18734_H73KFGXX_MCF7_C11_ACAGTG_R1_minus.bw",sep=""))
-
-B7_BBCA_pl <- load.bigWig(paste(path, "5089_5598_18730_H73KFGXX_MCF7_B7_BBCA_ATCACG_R1_plus.bw",sep=""))
-B7_BBCA_mn <- load.bigWig(paste(path, "5089_5598_18730_H73KFGXX_MCF7_B7_BBCA_ATCACG_R1_minus.bw",sep=""))
-G11_BBCA_pl <- load.bigWig(paste(path, "5089_5598_18731_H73KFGXX_MCF7_G11_BBCA_CGATGT_R1_plus.bw", sep=""))
-G11_BBCA_mn <- load.bigWig(paste(path, "5089_5598_18731_H73KFGXX_MCF7_G11_BBCA_CGATGT_R1_minus.bw", sep=""))
+B7_BBCA_pl <- load.bigWig(paste(path,"sB7_bbca_pl.bw", sep=""))
+B7_BBCA_mn <- load.bigWig(paste(path,"sB7_bbca_mn.bw", sep=""))
+G11_BBCA_pl <- load.bigWig(paste(path,"sG11_bbca_pl.bw", sep=""))
+G11_BBCA_mn <- load.bigWig(paste(path,"sG11_bbca_mn.bw", sep=""))
 
 countTRE <- function(plus, minus, tres) {
   bed.region.bpQuery.bigWig(plus, tres, abs.value = TRUE)+bed.region.bpQuery.bigWig(minus, tres, abs.value = TRUE)

@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-dP=../../RawSequenceFiles/mcf7tamRes
+dP=../data #../RawSequenceFiles/mcf7tamRes
 swp=/workdir/mcf7-tmp
 mkdir $swp
 
@@ -9,21 +9,21 @@ do
  bigWigToBedGraph $dP/$i $swp/$name.bedGraph
 done
 
-bedtools unionbedg -i $swp/5089_5598_18730_H73KFGXX_MCF7_B7_BBCA_ATCACG_R1_plus.bedGraph \
-			$swp/5089_5598_18731_H73KFGXX_MCF7_G11_BBCA_CGATGT_R1_plus.bedGraph \
-			$swp/5089_5598_18732_H73KFGXX_MCF7_B7_TTAGGC_R1_plus.bedGraph \
-			$swp/5089_5598_18733_H73KFGXX_MCF7_G11_TGACCA_R1_plus.bedGraph \
-			$swp/5089_5598_18734_H73KFGXX_MCF7_C11_ACAGTG_R1_plus.bedGraph \
-			$swp/5089_5598_18735_H73KFGXX_MCF7_H9_GCCAAT_R1_plus.bedGraph \
-						| awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4+$5+$6+$7+$8+$9}' > mcf7.plus.bedGraph
+bedtools unionbedg -i $swp/rG11_bbca_pl.bw \
+			$swp/rG11_pl.bw \
+			$swp/rH9_pl.bw \
+			$swp/sB7_bbca_pl.bw \
+			$swp/sB7_pl.bw \
+			$swp/sC11_pl.bw \
+				| awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4+$5+$6+$7+$8+$9}' > mcf7.plus.bedGraph
 
-bedtools unionbedg -i $swp/5089_5598_18730_H73KFGXX_MCF7_B7_BBCA_ATCACG_R1_minus.bedGraph \
-                        $swp/5089_5598_18731_H73KFGXX_MCF7_G11_BBCA_CGATGT_R1_minus.bedGraph \
-                        $swp/5089_5598_18732_H73KFGXX_MCF7_B7_TTAGGC_R1_minus.bedGraph \
-                        $swp/5089_5598_18733_H73KFGXX_MCF7_G11_TGACCA_R1_minus.bedGraph \
-                        $swp/5089_5598_18734_H73KFGXX_MCF7_C11_ACAGTG_R1_minus.bedGraph \
-                        $swp/5089_5598_18735_H73KFGXX_MCF7_H9_GCCAAT_R1_minus.bedGraph \
-                                                | awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4+$5+$6+$7+$8+$9}' > mcf7.minus.bedGraph
+bedtools unionbedg -i $swp/rG11_bbca_mn.bw \
+                        $swp/rG11_mn.bw \
+                        $swp/rH9_mn.bw \
+                        $swp/sB7_bbca_mn.bw \
+                        $swp/sB7_mn.bw \
+                        $swp/sC11_mn.bw \
+                                | awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4+$5+$6+$7+$8+$9}' > mcf7.minus.bedGraph
 
 
 CHINFO=/local/storage/data/hg19/hg19.chromInfo
