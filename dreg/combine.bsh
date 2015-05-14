@@ -5,24 +5,24 @@ mkdir $swp
 
 for i in $dP/*.bw
 do
- name=`echo $i | cut -d \/ -f 5 | cut -d \. -f 1`
+ name=`echo $i | cut -d \/ -f 3 | cut -d \. -f 1`
  bigWigToBedGraph $dP/$i $swp/$name.bedGraph
 done
 
-bedtools unionbedg -i $swp/rG11_bbca_pl.bw \
-			$swp/rG11_pl.bw \
-			$swp/rH9_pl.bw \
-			$swp/sB7_bbca_pl.bw \
-			$swp/sB7_pl.bw \
-			$swp/sC11_pl.bw \
+bedtools unionbedg -i $swp/rG11_bbca_pl.bedGraph \
+			$swp/rG11_pl.bedGraph \
+			$swp/rH9_pl.bedGraph \
+			$swp/sB7_bbca_pl.bedGraph \
+			$swp/sB7_pl.bedGraph \
+			$swp/sC11_pl.bedGraph \
 				| awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4+$5+$6+$7+$8+$9}' > mcf7.plus.bedGraph
 
-bedtools unionbedg -i $swp/rG11_bbca_mn.bw \
-                        $swp/rG11_mn.bw \
-                        $swp/rH9_mn.bw \
-                        $swp/sB7_bbca_mn.bw \
-                        $swp/sB7_mn.bw \
-                        $swp/sC11_mn.bw \
+bedtools unionbedg -i $swp/rG11_bbca_mn.bedGraph \
+                        $swp/rG11_mn.bedGraph \
+                        $swp/rH9_mn.bedGraph \
+                        $swp/sB7_bbca_mn.bedGraph \
+                        $swp/sB7_mn.bedGraph \
+                        $swp/sC11_mn.bedGraph \
                                 | awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4+$5+$6+$7+$8+$9}' > mcf7.minus.bedGraph
 
 

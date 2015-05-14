@@ -24,7 +24,7 @@ tfs <- tfbs.createFromCisBP(db.human, file.bigwig.plus= "mcf7.plus.bw", file.big
 tfs <- tfbs.getDistanceMatrix(tfs, ncores=25)
 clu <- tfbs.clusterMotifs(tfs, method="agnes", pdf.heatmap="motifs/MCF7.heatmap.pdf")
 
-for(i in c(5, 7, 8, 10)) {
+for(i in c(5, 6, 7, 8, 9, 10)) {
  motif_up <- tfbs.compareTFsite(tfs, hg19, tre_up, tre_unc, background.correction=TRUE, threshold=i)
  motif_dn <- tfbs.compareTFsite(tfs, hg19, tre_dn, tre_unc, background.correction=TRUE, threshold=i)
 

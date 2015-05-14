@@ -25,6 +25,7 @@ H9_pl <- load.bigWig(paste(path, "rH9_pl.bw", sep=""))
 H9_mn <- load.bigWig(paste(path, "rH9_mn.bw", sep=""))
 C11_pl <- load.bigWig(paste(path, "sC11_pl.bw", sep=""))
 C11_mn <- load.bigWig(paste(path, "sC11_mn.bw", sep=""))
+#hah_pl <- load.big
 
 B7_BBCA_pl <- load.bigWig(paste(path,"sB7_bbca_pl.bw", sep=""))
 B7_BBCA_mn <- load.bigWig(paste(path,"sB7_bbca_mn.bw", sep=""))
@@ -70,12 +71,12 @@ yb.sig.pal <- function(n, scale=10) {
  c(rgb(1, 1, YW), rgb(1-WB, 1-WB, 1))
 }
 
-drawCor <- function() {
-	rpkm_df <- gene_body_counts # as.matrix(ca[,indx])#/(ca[,"mapSize"]) ## "Good?!"  Remove H2-U, H3-PI, C2-U+PI, M1-PI
+drawCor <- function(indx) {
+	rpkm_df <- as.matrix(gene_body_counts[,indx]) # as.matrix(ca[,indx])#/(ca[,"mapSize"]) ## "Good?!"  Remove H2-U, H3-PI, C2-U+PI, M1-PI
 
-	cond <- c(1,1,1,1,2,2)#"", "", "", "", "", "")# Condition[indx]
-	spec <- c(1,1,2,2,1,2)#"", "", "", "", "", "")
-	labs <- colnames(gene_body_counts)
+	cond <- c(1,1,1,1,2,2)[indx]#"", "", "", "", "", "")# Condition[indx]
+	spec <- c(1,1,2,2,1,2)[indx]#"", "", "", "", "", "")
+	labs <- colnames(gene_body_counts)[indx]
 
 	cc <- cor(rpkm_df, method="spearman")
 	#clu <- agnes(t(rpkm_df))
@@ -83,7 +84,7 @@ drawCor <- function() {
 	pal2 <- c("#567C34", "#D14C29", "#567C34", "#69D270", "#7073C8", "#557571", "#CD9537", "#C0CB88")
 	#pal2 <- c("#CE50CA", "#5D9D4C", "#D75631", "#5A8399", "#A18132", "#AD5687", "#7D71C7", "#AD4C4C")
 	pal1 <- c("#B65BCB", "#C0513A", "#84CA54", "#92C2AF", "#4D4639", "#7B7EB5", "#BDA04D", "#B1517B")
-    pal3 <- c("#E03CE9", "#17B92B", "#E6350D", "#6FD2F0", "#F9F77F", "#5B6C0C", "#68003D", "#310F08")
+	pal3 <- c("#E03CE9", "#17B92B", "#E6350D", "#6FD2F0", "#F9F77F", "#5B6C0C", "#68003D", "#310F08")
 	
 	## Print dendrogram and heatmap with latticeExtra.
 	 library(latticeExtra)
@@ -114,4 +115,8 @@ drawCor <- function() {
 	 print(pl)
 }
 
-drawCor()
+pdf("correlationMatrix.pdf")
+	drawCor(1:6)
+	drawCor(1:4)
+dev.off()
+

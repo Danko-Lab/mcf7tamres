@@ -75,10 +75,45 @@ data.frame(sampleID, tamres, bbcatrt)
 #  return(ss, )
 #}
 
+
 #ss <- fitModel()
-gene_pvals <- cbind(refGene, FDR_TAM= p.adjust(ss$table$PValue), FC_TAM= ss$table$logFC, 
-								FDR_BBCA= p.adjust(sb$table$PValue), FC_BBCA= sb$table$logFC, 
-								FDR_BBCA_G11= p.adjust(sbg11$table$PValue), FC_BBCA_G11= sbg11$table$logFC)
+gene_pvals <- cbind(refGene, FDR_TAM= p.adjust(ss$table$PValue), FC_TAM= ss$table$logFC,
+                                                                FDR_BBCA= p.adjust(sb$table$PValue), FC_BBCA= sb$table$logFC,
+                                                                FDR_BBCA_G11= p.adjust(sbg11$table$PValue), FC_BBCA_G11= sbg11$table$logFC)
+
+## MA-plot
+pdf("MAPlot.pdf")
+sign <- which(ss$table$PValue < 0.01)
+#samp <- sample(NROW(gene_pvals), 0.3*NROW(gene_pvals))
+#maPlot(logAbundance= ss$table$logCPM[c(sign, samp)], logFC= ss$table$logFC[c(sign, samp)], de.tags= 1:NROW(sign), pch=19)
+maPlot(logAbundance= ss$table$logCPM, logFC= ss$table$logFC, de.tags= sign, pch=19)
+
+addlab <- function(gene_ID, ...) {
+  ig <- which(gene_pvals$V7 == gene_ID)
+  io <- ig[which.min(gene_pvals$FDR_TAM[ig])]
+  text(ss$table$logCPM[io], ss$table$logFC[io], labels= gene_ID, cex= 0.7, pos= 3, ...)
+} 
+
+laball <- function() {
+addlab("GREB1")
+addlab("GDNF")
+addlab("PGR")
+addlab("BMP5")
+
+addlab("CD36")
+addlab("MPPED1")
+
+#addlab("ESR1", col="white")
+#addlab("ERBB2", col="white")
+#addlab("REL", col="white")
+#addlab("PIK3CA", col="white")
+}
+laball()
+
+indx <- which(gene_pvals$FDR_TAM < 1e-10 | ss$table$logCPM > 10)
+maPlot(logAbundance= ss$table$logCPM[indx], logFC= ss$table$logFC[indx], pch=19)
+laball()
+dev.off()
 
 head(gene_pvals[order(gene_pvals$FDR_TAM),c(1:3,6:9)], n=30)
 head(gene_pvals[order(gene_pvals$FDR_BBCA),c(1:3,6:7,10:11)], n=30)
