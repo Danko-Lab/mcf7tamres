@@ -1,0 +1,21 @@
+#!/usr/bin/bash
+LSWP=/local/workdir/mcf7intersect
+mkdir $LSWP
+
+cat ../TRE.Signif.Changes.TamRes.tsv | awk 'BEGIN{OFS="\t"} ($6 < 0.01 && $7 < 0) {print $0}' | sort-bed - > $LSWP/TRE.down
+cat ../TRE.Signif.Changes.TamRes.tsv | awk 'BEGIN{OFS="\t"} ($6 < 0.01 && $7 > 0) {print $0}' | sort-bed - > $LSWP/TRE.up
+
+## Compare to TF binding motifs
+zcat /local/storage/data/hg19/mcf7/KittlerTfPeaks/GSE41995_FOS.bed.gz | sort-bed - > $LSWP/FOS.tmp.bed
+zcat /local/storage/data/hg19/mcf7/KittlerTfPeaks/GSE41995_JUN.bed.gz | sort-bed - > $LSWP/JUN.tmp.bed
+zcat /local/storage/data/hg19/mcf7/KittlerTfPeaks/GSE41995_PGR.bed.gz | sort-bed - > $LSWP/PGR.tmp.bed
+
+bedmap --indicator --echo $LSWP/FOS.tmp.bed $LSWP/TRE.down | less
+bedmap --indicator --echo $LSWP/JUN.tmp.bed $LSWP/TRE.down | less
+bedmap --indicator --echo $LSWP/PGR.tmp.bed $LSWP/TRE.down | less
+
+bedmap --indicator --echo $LSWP/FOS.tmp.bed $LSWP/TRE.up | less
+bedmap --indicator --echo $LSWP/JUN.tmp.bed $LSWP/TRE.up | less
+bedmap --indicator --echo $LSWP/PGR.tmp.bed $LSWP/TRE.up | less
+
+rm -Rf $LSWP
