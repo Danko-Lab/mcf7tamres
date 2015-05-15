@@ -39,3 +39,12 @@ for(i in c(5, 6, 7, 8, 9, 10)) {
 
 save.image("MCF7db.RData")
 
+## Draw logos for several genes.
+
+pdf("logos.pdf")
+ tfbs.drawLogo(tfs, index=which(tfs@TFID=="M4376_1.01"))
+ tfbs.drawLogo(tfs, index=which(tfs@TFID=="M4440_1.01"))
+ tfbs.drawLogo(tfs, index=which(tfs@TFID=="M4400_1.01"))
+dev.off()
+
+
