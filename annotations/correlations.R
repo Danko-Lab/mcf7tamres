@@ -88,8 +88,12 @@ cor(gene_body_counts, method="spearman")
 
 write.csv(cbind(refGene, gene_body_counts), "gene_body_counts.csv")
 
-## Create a clustering plot.
-
+## Create a colorscatterplot
+source("../lib/densScatterplot.R")
+indx <- (B7c > 0 & B7e > 0 & B7eb > 0 & B7 > 0 & B7b > 0)
+densScatterplot(B7[indx], B7b[indx], uselog=TRUE, xlab="B7", ylab="B7+BBCA")
+densScatterplot(B7c[indx], B7e[indx], uselog=TRUE, xlab="B7 -- Control", ylab="B7 + E2")
+densScatterplot(B7c[indx], B7eb[indx], uselog=TRUE, xlab="B7 -- Control", ylab="B7 + E2 + BBCA")
 
 ## Cluster changed genes...
 yb.sig.pal <- function(n, scale=10) {
@@ -119,9 +123,6 @@ drawCor <- function(indx) {
 	cc <- cor(rpkm_df, method="spearman")
 	#clu <- agnes(t(rpkm_df))
 
-	pal2 <- c("#567C34", "#D14C29", "#567C34", "#69D270", "#7073C8", "#557571", "#CD9537", "#C0CB88")
-	#pal2 <- c("#CE50CA", "#5D9D4C", "#D75631", "#5A8399", "#A18132", "#AD5687", "#7D71C7", "#AD4C4C")
-	pal1 <- c("#B65BCB", "#C0513A", "#84CA54", "#92C2AF", "#4D4639", "#7B7EB5", "#BDA04D", "#B1517B")
 	pal3 <- c("#E03CE9", "#17B92B", "#E6350D", "#6FD2F0", "#F9F77F", "#5B6C0C", "#68003D", "#310F08")
 	
 	## Print dendrogram and heatmap with latticeExtra.
@@ -142,12 +143,12 @@ drawCor <- function(indx) {
 			right = list(fun = dendrogramGrob,
 				 args = list(x = hc2, ord = ord.hc2, side = "right", #lwd=2,
 				 size = 7, size.add = 0.5, 
-				 add = list(rect = list(col = "transparent", fill = pal3[c(7, 1, 8)][cond])),
+				 add = list(rect = list(col = "transparent", fill = pal3[c(1:8)][cond])),
 				 type = "rectangle")), 
 			top = list(fun = dendrogramGrob,
 				 args = list(x = hc2, ord = ord.hc2, side = "top", #lwd=2,
 				 size = 1, size.add = 0.5, 
-				 add = list(rect = list(col = "transparent", fill = pal3[2:6][spec])),
+				 add = list(rect = list(col = "transparent", fill = pal3[2:8][spec])),
 				 type = "rectangle"))
 				 ))
 	 print(pl)

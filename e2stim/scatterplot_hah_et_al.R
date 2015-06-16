@@ -13,30 +13,53 @@ hah[,1:4] <- hg19[indx,c(1:3,6)]
 
 # Count reads in our new data.
 require(bigWig)
-data_path<- "/local/storage/projects/RawSequenceFiles/mcf7tamRes_e2stim"
+data_path<- "/local/storage/projects/mcf7tamres/data"
 
 B7c_pl <- load.bigWig(paste(data_path,"/B7_CTRL_plus.bw", sep=""))
 B7c_mn <- load.bigWig(paste(data_path,"/B7_CTRL_minus.bw", sep=""))
 B7e_pl <- load.bigWig(paste(data_path,"/B7_E2_plus.bw", sep=""))
 B7e_mn <- load.bigWig(paste(data_path,"/B7_E2_minus.bw", sep=""))
+B7t_pl <- load.bigWig(paste(data_path,"/B7_TAM_plus.bw", sep=""))
+B7t_mn <- load.bigWig(paste(data_path,"/B7_TAM_minus.bw", sep=""))
+B7eb_pl <- load.bigWig(paste(data_path,"/B7_E2_BBCA_plus.bw", sep=""))
+B7eb_mn <- load.bigWig(paste(data_path,"/B7_E2_BBCA_minus.bw", sep=""))
 
 B7c_counts <- (B7c_pl$basesCovered*B7c_pl$mean)+abs(B7c_mn$basesCovered*B7c_mn$mean)
 B7e_counts <- (B7e_pl$basesCovered*B7e_pl$mean)+abs(B7e_mn$basesCovered*B7e_mn$mean)
-
+B7t_counts <- (B7t_pl$basesCovered*B7t_pl$mean)+abs(B7t_mn$basesCovered*B7t_mn$mean)
+B7eb_counts <- (B7eb_pl$basesCovered*B7eb_pl$mean)+abs(B7eb_mn$basesCovered*B7eb_mn$mean)
 
 B7c <- bed6.region.bpQuery.bigWig(B7c_pl, B7c_mn, hah[,c(1:3,5:6,4)], abs.value=TRUE)
 B7e2<- bed6.region.bpQuery.bigWig(B7e_pl, B7e_mn, hah[,c(1:3,5:6,4)], abs.value=TRUE)
+B7t <- bed6.region.bpQuery.bigWig(B7t_pl, B7t_mn, hah[,c(1:3,5:6,4)], abs.value=TRUE)
+B7eb<- bed6.region.bpQuery.bigWig(B7eb_pl, B7eb_mn, hah[,c(1:3,5:6,4)], abs.value=TRUE)
 
+b7  <- log((B7e2+1)/B7e_counts/((B7c+1)/B7c_counts), 2)
+b7t <- log((B7t+1)/B7t_counts/((B7c+1)/B7c_counts), 2)
+b7b <- log((B7eb+1)/B7eb_counts/((B7c+1)/B7c_counts), 2)
 
-b7 <- log((B7e2+1)/B7e_counts/((B7c+1)/B7c_counts), 2)
 all_hah <- log((hah$E2_40m+1)/ (hah$VEH+1), 2)
 
-use <- hah$E2.40m.qVal < 0.0001
+use <- hah$E2.40m.qVal < 0.01 & abs(b7) > 1
+up  <- all_hah > 0
+down<- all_hah < 0
 plot(b7[use], all_hah[use]);abline(h=0);abline(v=0)
+plot(b7b[use], all_hah[use]);abline(h=0);abline(v=0)
 
 source("~/NHP/lib/densScatterplot.R")
 densScatterplot(b7[use], all_hah[use]);abline(h=0);abline(v=0)
+densScatterplot(b7b[use], all_hah[use]);abline(h=0);abline(v=0)
 
+#########################
+## Add violinplots.
+gbc <- read.csv("../annotations/gene_body_counts.csv")
+
+pdf("BBCAonE2.violinplot.pdf")
+require(vioplot)
+vioplot(b7[use&up], b7t[use&up], b7b[use&up], b7[use&down], b7t[use&down], b7b[use&down], names=c("Up E2", "Up TAM", "Up E2+BBCA", "DN E2", "DN Tam", "DN E2+BBCA")); abline(h=0)
+dev.off()
+
+##############################
 ## Compare to G11
 G11c_pl <- load.bigWig(paste(data_path,"/G11_CTRL_plus.bw", sep=""))
 G11c_mn <- load.bigWig(paste(data_path,"/G11_CTRL_minus.bw", sep=""))
@@ -53,5 +76,10 @@ g11 <- log((G11e2+1)/G11e_counts/((G11c+1)/G11c_counts), 2)
 plot(b7[use], g11[use]);abline(h=0);abline(v=0); abline(0,1)
 
 densScatterplot(b7[use], g11[use]);abline(h=0);abline(v=0)
+
+## Compare to BBCA
+B7eb_pl <- load.bigWig(paste(data_path,"/B7_E2_plus.bw", sep=""))
+B7eb_mn <- load.bigWig(paste(data_path,"/B7_E2_minus.bw", sep=""))
+
 
 
