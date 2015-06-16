@@ -32,6 +32,29 @@ B7_BBCA_mn <- load.bigWig(paste(path,"sB7_bbca_mn.bw", sep=""))
 G11_BBCA_pl <- load.bigWig(paste(path,"rG11_bbca_pl.bw", sep=""))
 G11_BBCA_mn <- load.bigWig(paste(path,"rG11_bbca_mn.bw", sep=""))
 
+## E2 and TAM treated.
+B7c_pl <- load.bigWig(paste(path, "B7_CTRL_plus.bw", sep=""))
+B7c_mn <- load.bigWig(paste(path, "B7_CTRL_minus.bw", sep=""))
+B7e_pl <- load.bigWig(paste(path, "B7_E2_plus.bw", sep=""))
+B7e_mn <- load.bigWig(paste(path, "B7_E2_minus.bw", sep=""))
+B7t_pl <- load.bigWig(paste(path, "B7_TAM_plus.bw", sep=""))
+B7t_mn <- load.bigWig(paste(path, "B7_TAM_minus.bw", sep=""))
+B7eb_pl <- load.bigWig(paste(path, "B7_E2_BBCA_plus.bw", sep=""))
+B7eb_mn <- load.bigWig(paste(path, "B7_E2_BBCA_minus.bw", sep=""))
+B7tb_pl<- load.bigWig(paste(path, "B7_TAM_BBCA_plus.bw", sep=""))
+B7tb_mn<- load.bigWig(paste(path, "B7_TAM_BBCA_minus.bw", sep=""))
+
+G11c_pl  <- load.bigWig(paste(path, "G11_CTRL_plus.bw", sep=""))
+G11c_mn  <- load.bigWig(paste(path, "G11_CTRL_minus.bw", sep=""))
+G11e_pl <- load.bigWig(paste(path, "G11_E2_plus.bw", sep=""))
+G11e_mn <- load.bigWig(paste(path, "G11_E2_minus.bw", sep=""))
+G11t_pl <- load.bigWig(paste(path, "G11_TAM_plus.bw", sep=""))
+G11t_mn <- load.bigWig(paste(path, "G11_TAM_minus.bw", sep=""))
+G11eb_pl<- load.bigWig(paste(path, "G11_E2_BBCA_plus.bw", sep=""))
+G11eb_mn<- load.bigWig(paste(path, "G11_E2_BBCA_minus.bw", sep=""))
+G11tb_pl<- load.bigWig(paste(path, "G11_TAM_BBCA_plus.bw", sep=""))
+G11tb_mn<- load.bigWig(paste(path, "G11_TAM_BBCA_minus.bw", sep=""))
+
 ## Count reads in each ...
 B7 <- bed6.region.bpQuery.bigWig(B7_pl, B7_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (B7_pl$basesCovered * B7_pl$mean + abs(B7_mn$basesCovered * B7_mn$mean)) * 1e6
 G11<- bed6.region.bpQuery.bigWig(G11_pl, G11_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (G11_pl$basesCovered * G11_pl$mean + abs(G11_mn$basesCovered * G11_mn$mean)) * 1e6
@@ -39,7 +62,22 @@ H9 <- bed6.region.bpQuery.bigWig(H9_pl, H9_mn, bodies, abs.value = TRUE)/ (bodie
 C11<- bed6.region.bpQuery.bigWig(C11_pl, C11_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (C11_pl$basesCovered * C11_pl$mean + abs(C11_mn$basesCovered * C11_mn$mean)) * 1e6
 B7b <- bed6.region.bpQuery.bigWig(B7_BBCA_pl, B7_BBCA_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (B7_BBCA_pl$basesCovered * B7_BBCA_pl$mean + abs(B7_BBCA_mn$basesCovered * B7_BBCA_mn$mean)) * 1e6
 G11b<- bed6.region.bpQuery.bigWig(G11_BBCA_pl, G11_BBCA_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (G11_BBCA_pl$basesCovered * G11_BBCA_pl$mean + abs(G11_BBCA_mn$basesCovered * G11_BBCA_mn$mean)) * 1e6
-gene_body_counts <- cbind(B7, C11, H9, G11, B7b, G11b)
+
+## Count E2TAM
+B7c <- bed6.region.bpQuery.bigWig(B7c_pl, B7c_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (B7c_pl$basesCovered * B7c_pl$mean + abs(B7c_mn$basesCovered * B7c_mn$mean)) * 1e6
+B7e <- bed6.region.bpQuery.bigWig(B7e_pl, B7e_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (B7e_pl$basesCovered * B7e_pl$mean + abs(B7e_mn$basesCovered * B7e_mn$mean)) * 1e6
+B7t <- bed6.region.bpQuery.bigWig(B7t_pl, B7t_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (B7t_pl$basesCovered * B7t_pl$mean + abs(B7t_mn$basesCovered * B7t_mn$mean)) * 1e6
+B7eb<- bed6.region.bpQuery.bigWig(B7eb_pl, B7eb_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (B7eb_pl$basesCovered * B7eb_pl$mean + abs(B7eb_mn$basesCovered * B7eb_mn$mean)) * 1e6
+B7tb<- bed6.region.bpQuery.bigWig(B7tb_pl, B7tb_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (B7tb_pl$basesCovered * B7tb_pl$mean + abs(B7tb_mn$basesCovered * B7tb_mn$mean)) * 1e6
+
+G11c <- bed6.region.bpQuery.bigWig(G11c_pl, G11c_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (G11c_pl$basesCovered * G11c_pl$mean + abs(G11c_mn$basesCovered * G11c_mn$mean)) * 1e6
+G11e <- bed6.region.bpQuery.bigWig(G11e_pl, G11e_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (G11e_pl$basesCovered * G11e_pl$mean + abs(G11e_mn$basesCovered * G11e_mn$mean)) * 1e6
+G11t <- bed6.region.bpQuery.bigWig(G11t_pl, G11t_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (G11t_pl$basesCovered * G11t_pl$mean + abs(G11t_mn$basesCovered * G11t_mn$mean)) * 1e6
+G11eb<- bed6.region.bpQuery.bigWig(G11eb_pl, G11eb_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (G11eb_pl$basesCovered * G11eb_pl$mean + abs(G11eb_mn$basesCovered * G11eb_mn$mean)) * 1e6
+G11tb<- bed6.region.bpQuery.bigWig(G11tb_pl, G11tb_mn, bodies, abs.value = TRUE)/ (bodies$V3-bodies$V2) * 1000/ (G11tb_pl$basesCovered * G11tb_pl$mean + abs(G11tb_mn$basesCovered * G11tb_mn$mean)) * 1e6
+
+
+gene_body_counts <- cbind(B7, C11, H9, G11, B7b, G11b, B7c, B7e, B7t, B7eb, B7tb, G11c, G11e, G11t, G11eb, G11tb)
 
 ## Make some plots
 plot(B7, C11)
@@ -74,8 +112,8 @@ yb.sig.pal <- function(n, scale=10) {
 drawCor <- function(indx) {
 	rpkm_df <- as.matrix(gene_body_counts[,indx]) # as.matrix(ca[,indx])#/(ca[,"mapSize"]) ## "Good?!"  Remove H2-U, H3-PI, C2-U+PI, M1-PI
 
-	cond <- c(1,1,1,1,2,2)[indx]#"", "", "", "", "", "")# Condition[indx]
-	spec <- c(1,1,2,2,1,2)[indx]#"", "", "", "", "", "")
+	cond <- c(1,1,1,1,2,2,3,4,5,6,7,3,4,5,6,7)[indx]#"", "", "", "", "", "")# Condition[indx]
+	spec <- c(1,1,2,2,1,2,1,1,1,1,1,2,2,2,2,2)[indx]#"", "", "", "", "", "")
 	labs <- colnames(gene_body_counts)[indx]
 
 	cc <- cor(rpkm_df, method="spearman")
@@ -118,5 +156,6 @@ drawCor <- function(indx) {
 pdf("correlationMatrix.pdf")
 	drawCor(1:6)
 	drawCor(1:4)
+	drawCor(1:16)
 dev.off()
 
