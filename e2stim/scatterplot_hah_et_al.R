@@ -59,13 +59,13 @@ densScatterplot(rL$Ceb[use], rL$all_hah[use]);abline(h=0);abline(v=0)
 
 #########################
 ## Add violinplots.
-use <- hah$E2.40m.qVal < 0.01 & abs(b7) > 1 ## Looking at the effects of  BBCA, require changed in this experiment.
+use <- hah$E2.40m.qVal < 0.01 & abs(rL$Ce) > 1 ## Looking at the effects of  BBCA, require changed >2-fold in E2 B7.  
 
 gbc <- read.csv("../annotations/gene_body_counts.csv")
 
 pdf("BBCAonE2.violinplot.pdf")
 require(vioplot)
-vioplot(b7[use&up], b7t[use&up], b7b[use&up], b7[use&down], b7t[use&down], b7b[use&down], names=c("Up E2", "Up TAM", "Up E2+BBCA", "DN E2", "DN Tam", "DN E2+BBCA")); abline(h=0)
+vioplot(rL$Ce[use&up], rL$Cet[use&up], rL$Ceb[use&up], rL$Ce[use&down], rL$Cet[use&down], rL$Ceb[use&down], names=c("Up E2", "Up TAM", "Up E2+BBCA", "DN E2", "DN Tam", "DN E2+BBCA")); abline(h=0)
 dev.off()
 
 ##############################
@@ -74,11 +74,7 @@ rLg11 <- getCounts("G11")
 
 plot(rL$Ce[use], rLg11$Ce[use]);abline(h=0);abline(v=0); abline(0,1)
 
-densScatterplot(b7[use], g11[use]);abline(h=0);abline(v=0)
-
-## Compare to BBCA
-B7eb_pl <- load.bigWig(paste(data_path,"/B7_E2_plus.bw", sep=""))
-B7eb_mn <- load.bigWig(paste(data_path,"/B7_E2_minus.bw", sep=""))
-
-
-
+pdf("B7vG11.E2Response.pdf")
+ densScatterplot(b7[use], g11[use]);abline(h=0);abline(v=0)
+ vioplot(rLg11$Ce[use&up], rLg11$Cet[use&up], rLg11$Ceb[use&up], rLg11$Ce[use&down], rLg11$Cet[use&down], rLg11$Ceb[use&down], names=c("Up E2", "Up TAM", "Up E2+BBCA", "DN E2", "DN Tam", "DN E2+BBCA")); abline(h=0)
+dev.off()
