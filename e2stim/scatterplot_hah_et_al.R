@@ -47,8 +47,8 @@ getCounts <- function(prefix) {
 rL <- getCounts("B7")
 
 use <- hah$E2.40m.qVal < 0.01 #& abs(b7) > 1
-up  <- all_hah > 0
-down<- all_hah < 0
+up  <- rL$all_hah > 0
+down<- rL$all_hah < 0
 plot(rL$Ce[use], rL$all_hah[use]);abline(h=0);abline(v=0)
 plot(rL$Ce[use], rL$Ceb[use]);abline(h=0);abline(v=0)
 plot(rL$Ce[use], rL$Cet[use]);abline(h=0);abline(v=0)
@@ -75,6 +75,6 @@ rLg11 <- getCounts("G11")
 plot(rL$Ce[use], rLg11$Ce[use]);abline(h=0);abline(v=0); abline(0,1)
 
 pdf("B7vG11.E2Response.pdf")
- densScatterplot(b7[use], g11[use]);abline(h=0);abline(v=0)
+ densScatterplot(rL$Ce[use], rLg11$Ce[use]);abline(h=0);abline(v=0)
  vioplot(rLg11$Ce[use&up], rLg11$Cet[use&up], rLg11$Ceb[use&up], rLg11$Ce[use&down], rLg11$Cet[use&down], rLg11$Ceb[use&down], names=c("Up E2", "Up TAM", "Up E2+BBCA", "DN E2", "DN Tam", "DN E2+BBCA")); abline(h=0)
 dev.off()

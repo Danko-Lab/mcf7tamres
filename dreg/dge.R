@@ -1,7 +1,10 @@
 ## get correlations between MCF-7 samples
 
 ## Read in refseq genes.
-tres <- read.table("mcf7_tamSR.bedgraph.bed.gz")
+dreg  <-read.table("mcf7_tamSR.bedgraph.bed.gz")
+dregHD<-read.table("dregHD/mcf7.dREG_HD.bed"); dregHD <- dregHD[dregHD$V3-dregHD$V2 > 0,]
+
+tres <- dregHD
 
 ## Read in bigWigs.
 require(bigWig)
@@ -22,6 +25,7 @@ G11_BBCA_pl <- load.bigWig(paste(path,"rG11_bbca_pl.bw", sep=""))
 G11_BBCA_mn <- load.bigWig(paste(path,"rG11_bbca_mn.bw", sep=""))
 
 countTRE <- function(plus, minus, tres) {
+  ## For dREG HD
   bed.region.bpQuery.bigWig(plus, tres, abs.value = TRUE)+bed.region.bpQuery.bigWig(minus, tres, abs.value = TRUE)
 }
 

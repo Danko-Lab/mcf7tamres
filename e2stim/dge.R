@@ -51,6 +51,11 @@ data.frame(sampleID, trt, bbca)
 
   ####################
   ## Fit LRT model for BBCA.
+
+  ## Assumptions: 
+  ## Treat str/ tam as biological replicaties [Spearman's Rho > 0.99].
+  ## Treat BBCA+ E2/ tam as biological replicates [again, Spearman's Rho > 0.99].
+
   design <- model.matrix(~trt+bbca)
   rownames(design) <- colnames(gene_body_counts)
 
@@ -82,7 +87,40 @@ data.frame(sampleID, trt, bbca)
 gene_pvals <- cbind(refGene, FDR_bbca= p.adjust(bbca_ss$table$PValue), FC_BBCA= bbca_ss$table$logFC, 
 				FDR_b7_e2= p.adjust(b7e2$table$PValue), FC_b7_e2= b7e2$table$logFC,
 				FDR_g11_e2= p.adjust(g11e2$table$PValue), FC_g11_e2= g11e2$table$logFC)
+
+
 ## Questions...
+
+## (0) How many genes are changed following BBCA.
+NROW(unique(gene_pvals$V7[(gene_pvals$FDR_bbca < PVAL)]))
+
+## (00) Are they enriched for E2 targets?!
+par(mfrow=c(2,1))
+hist(gene_pvals$FC_BBCA[gene_pvals$FDR_bbca<PVAL])
+hist(gene_pvals$FC_b7_e2[gene_pvals$FDR_bbca<PVAL])
+
+hist(gene_pvals$FC_BBCA[gene_pvals$FDR_bbca<PVAL & gene_pvals$FC_BBCA>0])
+hist(gene_pvals$FC_b7_e2[gene_pvals$FDR_bbca<PVAL & gene_pvals$FC_BBCA>0])
+
+hist(gene_pvals$FC_BBCA[gene_pvals$FDR_bbca<PVAL & gene_pvals$FC_BBCA<0])
+hist(gene_pvals$FC_b7_e2[gene_pvals$FDR_bbca<PVAL & gene_pvals$FC_BBCA<0])
+
+par(mfrow=c(1,1))
+require(vioplot)
+vioplot(gene_pvals$FC_BBCA[gene_pvals$FDR_bbca<PVAL], gene_pvals$FC_b7_e2[gene_pvals$FDR_bbca<PVAL], 
+	gene_pvals$FC_BBCA[gene_pvals$FDR_bbca<PVAL & gene_pvals$FC_BBCA>0], gene_pvals$FC_b7_e2[gene_pvals$FDR_bbca<PVAL & gene_pvals$FC_BBCA>0],
+	gene_pvals$FC_BBCA[gene_pvals$FDR_bbca<PVAL & gene_pvals$FC_BBCA<0], gene_pvals$FC_b7_e2[gene_pvals$FDR_bbca<PVAL & gene_pvals$FC_BBCA<0])
+
+## ADD THE HAH et. al. dataset.
+hah <- read.table("GSE27463_RefSeq.reg.tsv.gz", header=TRUE)
+
+## of genes that are down-regulated by bbca, which fraction are E2-reg in Hah et. al. (2011)?
+NROW(unique(gene_pvals$V7[(gene_pvals$FDR_bbca < PVAL & gene_pvals$FC_BBCA < 0)]))
+NROW(unique(gene_pvals$V7[(gene_pvals$FDR_bbca < PVAL & gene_pvals$FC_BBCA < 0)][gene_pvals$V4[(gene_pvals$FDR_bbca < PVAL & gene_pvals$FC_BBCA < 0)] %in% hah$RefSeqID])) ## All E2Reg
+NROW(unique(gene_pvals$V7[(gene_pvals$FDR_bbca < PVAL & gene_pvals$FC_BBCA < 0)][gene_pvals$V4[(gene_pvals$FDR_bbca < PVAL & gene_pvals$FC_BBCA < 0)] %in% hah$RefSeqID[log(hah$E2_40m/hah$VEH) > 0]])) ## Up-regulated
+
+write.table(gene_pvals[order(gene_pvals$FDR_bbca),], "BBCA.Responding.tsv", sep="\t", quote=FALSE, col.names=TRUE, row.names=FALSE)
+
 ## (1) Is E2 stimulation functional in resistant lines.
 ## YES!
 sum(gene_pvals$FDR_g11_e2 < PVAL) ## Plus, the genes check out.
