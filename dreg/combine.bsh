@@ -25,10 +25,42 @@ bedtools unionbedg -i $swp/rG11_bbca_mn.bedGraph \
                         $swp/sC11_mn.bedGraph \
                                 | awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4+$5+$6+$7+$8+$9}' > mcf7.minus.bedGraph
 
+bedtools unionbedg -i $swp/MCF-7_B7_GDNF_0_hr_plus.bedGraph \
+                        $swp/MCF-7_B7_GDNF_1_hr_plus.bedGraph \
+                        $swp/MCF-7_B7_GDNF_24_hr_plus.bedGraph \
+                        $swp/MCF-7_C11_GDNF_0_hr_plus.bedGraph \
+                        $swp/MCF-7_C11_GDNF_1_hr_plus.bedGraph \
+                        $swp/MCF-7_C11_GDNF_24_hr_plus.bedGraph \
+                        $swp/MCF-7_H9_GDNF_0_hr_plus.bedGraph \
+                        $swp/MCF-7_H9_GDNF_1_hr_plus.bedGraph \
+                        $swp/MCF-7_H9_GDNF_24_hr_plus.bedGraph \
+                        $swp/MCF-7_G11_GDNF_0_hr_plus.bedGraph \
+                        $swp/MCF-7_G11_GDNF_1_hr_plus.bedGraph \
+                        $swp/MCF-7_G11_GDNF_24_hr_plus.bedGraph \
+                                | awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4+$5+$6+$7+$8+$9}' > mcf7.gdnf.plus.bedGraph
+
+
+bedtools unionbedg -i $swp/MCF-7_B7_GDNF_0_hr_minus.bedGraph \
+                        $swp/MCF-7_B7_GDNF_1_hr_minus.bedGraph \
+                        $swp/MCF-7_B7_GDNF_24_hr_minus.bedGraph \
+                        $swp/MCF-7_C11_GDNF_0_hr_minus.bedGraph \
+                        $swp/MCF-7_C11_GDNF_1_hr_minus.bedGraph \
+			$swp/MCF-7_C11_GDNF_24_hr_minus.bedGraph \
+			$swp/MCF-7_H9_GDNF_0_hr_minus.bedGraph \
+                        $swp/MCF-7_H9_GDNF_1_hr_minus.bedGraph \
+                        $swp/MCF-7_H9_GDNF_24_hr_minus.bedGraph \
+                        $swp/MCF-7_G11_GDNF_0_hr_minus.bedGraph \
+                        $swp/MCF-7_G11_GDNF_1_hr_minus.bedGraph \
+                        $swp/MCF-7_G11_GDNF_24_hr_minus.bedGraph \
+				| awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4+$5+$6+$7+$8+$9}' > mcf7.gdnf.minus.bedGraph
+
 
 CHINFO=/local/storage/data/hg19/hg19.chromInfo
 bedGraphToBigWig mcf7.plus.bedGraph $CHINFO mcf7.plus.bw
 bedGraphToBigWig mcf7.minus.bedGraph $CHINFO mcf7.minus.bw
+bedGraphToBigWig mcf7.gdnf.plus.bedGraph $CHINFO mcf7.gdnf.plus.bw
+bedGraphToBigWig mcf7.gdnf.minus.bedGraph $CHINFO mcf7.gdnf.minus.bw
+
 
 rm *.bedGraph 
 rm -Rf $swp

@@ -45,6 +45,7 @@ getCounts <- function(prefix) {
 }
 
 rL <- getCounts("B7")
+rLg11 <- getCounts("G11")
 
 use <- hah$E2.40m.qVal < 0.01 #& abs(b7) > 1
 up  <- rL$all_hah > 0
@@ -59,7 +60,8 @@ densScatterplot(rL$Ceb[use], rL$all_hah[use]);abline(h=0);abline(v=0)
 
 #########################
 ## Add violinplots.
-use <- hah$E2.40m.qVal < 0.01 & abs(rL$Ce) > 1 ## Looking at the effects of  BBCA, require changed >2-fold in E2 B7.  
+#use <- hah$E2.40m.qVal < 0.01 & abs(rL$Ce) > 0.25 & abs(rLg11$Ce) > 0.25 ## Looking at the effects of  BBCA, require changed >2-fold in E2 B7.  
+use <- hah$E2.40m.qVal < 0.01 & abs(rL$Ce) > 1 #& abs(rLg11$Ce) > 1 ## Looking at the effects of  BBCA, require changed >2-fold in E2 B7.  
 
 gbc <- read.csv("../annotations/gene_body_counts.csv")
 
@@ -70,11 +72,20 @@ dev.off()
 
 ##############################
 ## Compare to G11
-rLg11 <- getCounts("G11")
 
 plot(rL$Ce[use], rLg11$Ce[use]);abline(h=0);abline(v=0); abline(0,1)
 
 pdf("B7vG11.E2Response.pdf")
  densScatterplot(rL$Ce[use], rLg11$Ce[use]);abline(h=0);abline(v=0)
  vioplot(rLg11$Ce[use&up], rLg11$Cet[use&up], rLg11$Ceb[use&up], rLg11$Ce[use&down], rLg11$Cet[use&down], rLg11$Ceb[use&down], names=c("Up E2", "Up TAM", "Up E2+BBCA", "DN E2", "DN Tam", "DN E2+BBCA")); abline(h=0)
+ vioplot(rL$Cet[use&up], rLg11$Cet[use&up], rL$Cet[use&down], rLg11$Cet[use&down], names=c("Up B7 t", "Up G11 t", "Dn B7 t", "Dn G11 t")); abline(h=0)
+ vioplot(rL$Ce[use&up], rLg11$Ce[use&up], rL$Ce[use&down], rLg11$Ce[use&down], names=c("Up B7 e", "Up G11 e", "Dn B7 e", "Dn G11 e")); abline(h=0)
 dev.off()
+
+##  
+
+2^summary(rLg11$Ce[use&up])
+2^summary(rL$Ce[use&up])
+
+wilcox.test(rLg11$Ce[use&up], rL$Ce[use&up])
+

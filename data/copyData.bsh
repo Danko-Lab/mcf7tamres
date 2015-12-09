@@ -19,3 +19,4 @@ cp $PTH/5089_5598_18730_H73KFGXX_MCF7_B7_BBCA_ATCACG_R1_minus.bw sB7_bbca_mn.bw
 cp $PTH/5089_5598_18731_H73KFGXX_MCF7_G11_BBCA_CGATGT_R1_plus.bw rG11_bbca_pl.bw
 cp $PTH/5089_5598_18731_H73KFGXX_MCF7_G11_BBCA_CGATGT_R1_minus.bw rG11_bbca_mn.bw
 
+cp /local/storage/projects/RawSequenceFiles/mcf7_GDNFstim/MCF-7*.bw .

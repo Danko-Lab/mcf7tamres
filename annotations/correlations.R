@@ -91,10 +91,15 @@ write.csv(cbind(refGene, gene_body_counts), "gene_body_counts.csv")
 ## Create a colorscatterplot
 source("../lib/densScatterplot.R")
 pdf("DensityScatterplots.pdf")
+
+indx <- B7 > 0 & G11 > 0
+densScatterplot(B7[indx], G11[indx], uselog=TRUE, xlab="B7", ylab="G11")
+
 indx <- (B7c > 0 & B7e > 0 & B7eb > 0 & B7 > 0 & B7b > 0)
 densScatterplot(B7[indx], B7b[indx], uselog=TRUE, xlab="B7", ylab="B7+BBCA")
 densScatterplot(B7c[indx], B7e[indx], uselog=TRUE, xlab="B7 -- Control", ylab="B7 + E2")
 densScatterplot(B7c[indx], B7eb[indx], uselog=TRUE, xlab="B7 -- Control", ylab="B7 + E2 + BBCA")
+
 dev.off()
 
 ## Cluster changed genes...
