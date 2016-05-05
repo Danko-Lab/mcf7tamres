@@ -1,0 +1,55 @@
+#!/usr/bin/bash
+CI=/local/storage/data/hg19/hg19.chromInfo
+
+function getCountsBw {
+        bigWigToBedGraph ${1}_plus.bw tmp.plus.bedGraph ## NOTE THE USE OF hg19 coords here.  We're normalizing to hg19.
+        bigWigToBedGraph ${1}_minus.bw tmp.minus.bedGraph
+        cat tmp.plus.bedGraph  | awk '{print $4}' | gzip >  $1.counts.gz
+        cat tmp.minus.bedGraph | awk '{print $4}' | gzip >> $1.counts.gz
+        READCOUNTS=`zcat $1.counts.gz | awk 'function abs(value){return (value<0?-value:value);}; {sum+=abs($1)} END {print sum}'`
+        rm tmp.plus.bedGraph tmp.minus.bedGraph $1.counts.gz
+}
+
+function getCountsBwAlt {
+        bigWigToBedGraph ${1}_pl.bw tmp.plus.bedGraph ## NOTE THE USE OF hg19 coords here.  We're normalizing to hg19.
+        bigWigToBedGraph ${1}_mn.bw tmp.minus.bedGraph
+        cat tmp.plus.bedGraph  | awk '{print $4}' | gzip >  $1.counts.gz
+        cat tmp.minus.bedGraph | awk '{print $4}' | gzip >> $1.counts.gz
+        READCOUNTS=`zcat $1.counts.gz | awk 'function abs(value){return (value<0?-value:value);}; {sum+=abs($1)} END {print sum}'`
+        rm tmp.plus.bedGraph tmp.minus.bedGraph $1.counts.gz
+}
+
+function normBw {
+        bigWigToBedGraph ${1}.bw tmp.bedGraph ## NOTE THE USE OF hg19 coords here.  We're normalizing to hg19.
+        cat tmp.bedGraph | awk 'BEGIN{OFS="\t"} {print $1,$2,$3,$4*1000*1000/'$2'/1}' > tmp.rpkm.bedGraph
+        bedGraphToBigWig tmp.rpkm.bedGraph $CI $1.rpkm.bw
+        rm tmp.bedGraph tmp.rpkm.bedGraph
+}
+
+fileprefix=`ls *plus.bw | cut -d \. -f 1 | rev | cut -d _ -f2- | rev | uniq`
+
+## Get post-liftOver counts.
+for i in $fileprefix
+do
+        echo $i
+        getCountsBw $i
+
+	echo $READCOUNTS
+	normBw ${i}_plus  $READCOUNTS
+	normBw ${i}_minus $READCOUNTS
+done
+
+## Why use two separate prefixes for plus/ minus strand?!
+fileprefix=`ls *pl.bw | cut -d \. -f 1 | rev | cut -d _ -f2- | rev | uniq`
+for i in $fileprefix
+do
+        echo $i
+        getCountsBwAlt $i
+
+        echo $READCOUNTS
+        normBw ${i}_pl $READCOUNTS
+        normBw ${i}_mn $READCOUNTS
+done
+
+
+#ls *.bw | cut -d \. -f 1 | rev | cut -d _ -f 1 | rev

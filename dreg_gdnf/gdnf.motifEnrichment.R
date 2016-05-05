@@ -21,8 +21,8 @@ hg19 <- "/local/storage/data/hg19/hg19.2bit"
 
 db.human <- CisBP.extdata("Homo_sapiens")
 tfs <- tfbs.createFromCisBP(db.human, file.bigwig.plus= "mcf7.plus.bw", file.bigwig.minus= "mcf7.minus.bw", file.gencode.gtf="/local/storage/data/hg19/all/gencode/gencode.v19.annotation.gtf.gz")
-tfs <- tfbs.getDistanceMatrix(tfs, ncores=25)
-clu <- tfbs.clusterMotifs(tfs, method="agnes", pdf.heatmap="motifs/MCF7.heatmap.pdf")
+#tfs <- tfbs.getDistanceMatrix(tfs, ncores=25)
+clu <- tfbs.clusterMotifs(tfs, method="apcluster", pdf.heatmap="motifs/MCF7.heatmap.pdf")
 use_indx <- tfbs.selectByGeneExp(tfs, clu) 
 
 for(i in c(7, 8, 9)) {

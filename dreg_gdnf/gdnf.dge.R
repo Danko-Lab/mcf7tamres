@@ -1,22 +1,11 @@
 ## get correlations between MCF-7 samples
 
 ## Read in refseq genes.
-refGene <- read.table("refGene.bed.gz")
-refGene <- refGene[grep("random|Un|hap", refGene$V1, invert=TRUE),]
-refGene <- refGene[(refGene$V3-refGene$V2)>5000,]
+refGene <- read.table("../dreg/mcf7.gdnf.dREG_HD.bed")
+refGene <- cbind(refGene, name=paste(refGene[,1], ":",refGene[,2], "-", refGene[,3], sep=""), refGene) 
 
-bodies <- refGene
-bodies$V2[bodies$V6 == "+"] <-bodies$V2[bodies$V6 == "+"]+1000
-bodies$V3[bodies$V6 == "-"] <- bodies$V3[bodies$V6 == "-"]-1000
-
-size <- refGene$V3-refGene$V2
-maxsize <- 60000
-bodies$V3[bodies$V6 == "+" & size>maxsize] <- refGene$V2[bodies$V6 == "+" & size>maxsize]+maxsize
-bodies$V2[bodies$V6 == "-" & size>maxsize] <- refGene$V3[bodies$V6 == "-" & size>maxsize]-maxsize
-
-tss <- refGene
-tss$V3[tss$V6 == "+"] <-tss$V2[tss$V6 == "+"]+1000
-tss$V2[tss$V6 == "-"] <- tss$V3[tss$V6 == "-"]-1000
+refGene[,2] <- refGene[,2]-200
+refGene[,3] <- refGene[,3]+200
 
 ## Read in bigWigs.
 require(bigWig)
@@ -25,7 +14,7 @@ countBigWig <- function(prefix, path="../data/") {
  pl <- load.bigWig(paste(path, "MCF-7_", prefix, "_plus.bw", sep=""))
  mn <- load.bigWig(paste(path, "MCF-7_", prefix, "_minus.bw", sep=""))
 
- counts <- bed6.region.bpQuery.bigWig(pl, mn, bodies, abs.value = TRUE)
+ counts <- bed.region.bpQuery.bigWig(pl, refGene[1:3], abs.value = TRUE) + abs(bed.region.bpQuery.bigWig(mn, refGene[,1:3], abs.value = TRUE))
  return(counts)
 }
 
@@ -91,6 +80,34 @@ data.frame(sampleID, tamres, gdnftrt)
   gdnf_24h_cont <- makeContrasts(gdnftrt_sgdnf24h, levels=design)
   gdnf_24h_lrt_s <- glmLRT(fit,contrast=gdnf_24h_cont)
 
+############################################################################################33
+## Limit analysis to sensitive lines, 1h ... does the strange bias for down-regulation hold?!
+  indx <- c(1:2,4:5)
+  gdnftrt_s <- gdnftrt[indx]
+  design <- model.matrix(~gdnftrt_s)
+  rownames(design) <- colnames(gene_body_counts[,indx])
+
+  ## Estimate dispersions.
+  dge <- estimateGLMCommonDisp(gene_body_counts[,indx], design, verbose=TRUE)
+  fit <- glmFit(gene_body_counts[,indx],design,dge)
+
+  ## Fit 1h GDNF.
+  gdnf_1h_cont <- makeContrasts(gdnftrt_sgdnf1h, levels=design)
+  gdnf_1h_lrt_s <- glmLRT(fit,contrast=gdnf_1h_cont)
+
+  ## And now 24h...
+  indx <- c(1,3:4,6)
+  gdnftrt_s <- gdnftrt[indx]
+  design <- model.matrix(~gdnftrt_s)
+  rownames(design) <- colnames(gene_body_counts[,indx])
+
+  ## Estimate dispersions.
+  dge <- estimateGLMCommonDisp(gene_body_counts[,indx], design, verbose=TRUE)
+  fit <- glmFit(gene_body_counts[,indx],design,dge)
+
+  ## Fit 24h GDNF.
+  gdnf_24h_cont <- makeContrasts(gdnftrt_sgdnf24h, levels=design)
+  gdnf_24h_lrt_s <- glmLRT(fit,contrast=gdnf_24h_cont)
 
 #ss <- fitModel()
 gene_pvals <- cbind(refGene, FDR_TAM= p.adjust(ss$table$PValue), FC_TAM= ss$table$logFC,
@@ -99,7 +116,15 @@ gene_pvals <- cbind(refGene, FDR_TAM= p.adjust(ss$table$PValue), FC_TAM= ss$tabl
                                                                 FDR_GDNF_1h_S= p.adjust(gdnf_1h_lrt_s$table$PValue), FC_GDNF_1h_S= gdnf_1h_lrt_s$table$logFC,
                                                                 FDR_GDNF_24h_S= p.adjust(gdnf_24h_lrt_s$table$PValue), FC_GDNF_24h_S= gdnf_24h_lrt_s$table$logFC)
 
-write.table(gene_pvals, "GDNF_treatment.tsv", sep="\t", row.names=FALSE, col.names=TRUE, quote=FALSE)
+sum(gene_pvals$FDR_GDNF_24h_S < 0.05 & gene_pvals$FC_GDNF_24h_S > 0)
+sum(gene_pvals$FDR_GDNF_1h_S < 0.05 & gene_pvals$FC_GDNF_1h_S > 0)
+
+sum(gene_pvals$FDR_GDNF_24h_S < 0.05 & gene_pvals$FC_GDNF_24h_S < 0)
+sum(gene_pvals$FDR_GDNF_1h_S < 0.05 & gene_pvals$FC_GDNF_1h_S < 0)
+
+
+
+write.table(gene_pvals, "GDNF_treatment.dREG-HD.tsv", sep="\t", row.names=FALSE, col.names=TRUE, quote=FALSE)
 
 head(gene_pvals[order(gene_pvals$FDR_TAM),], 20)
 head(gene_pvals[order(gene_pvals$FDR_GDNF_24h),c(7,10:NCOL(gene_pvals))], 100)
