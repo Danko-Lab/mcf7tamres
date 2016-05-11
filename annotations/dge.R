@@ -1,17 +1,18 @@
 ## get correlations between MCF-7 samples
 
 ## Read in refseq genes.
-refGene <- read.table("refGene.bed.gz")
-refGene <- refGene[grep("random|Un|hap", refGene$V1, invert=TRUE),]
-refGene <- refGene[(refGene$V3-refGene$V2)>5000,]
+#refGene <- read.table("refGene.bed.gz")
+refGene <- read.table("tuSelecter/final_tus.txt", header=TRUE)
+refGene <- refGene[grep("random|Un|hap", refGene$TXCHROM, invert=TRUE),]
+refGene <- refGene[(refGene$TXEND-refGene$TXSTART)>5000,]
 
 bodies <- refGene
-bodies$V2[bodies$V6 == "+"] <-bodies$V2[bodies$V6 == "+"]+1000
-bodies$V3[bodies$V6 == "-"] <- bodies$V3[bodies$V6 == "-"]-1000
+bodies$TXSTART[bodies$TXSTRAND == "+"] <-bodies$TXSTART[bodies$TXSTRAND == "+"]+1000
+bodies$TXEND[bodies$TXSTRAND == "-"] <- bodies$TXEND[bodies$TXSTRAND == "-"]-1000
 
 tss <- refGene
-tss$V3[tss$V6 == "+"] <-tss$V2[tss$V6 == "+"]+1000
-tss$V2[tss$V6 == "-"] <- tss$V3[tss$V6 == "-"]-1000
+tss$TXEND[tss$TXSTRAND == "+"] <-tss$TXSTART[tss$TXSTRAND == "+"]+1000
+tss$TXSTART[tss$TXSTRAND == "-"] <- tss$TXEND[tss$TXSTRAND == "-"]-1000
 
 ## Read in bigWigs.
 require(bigWig)

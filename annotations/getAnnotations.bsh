@@ -1,2 +1,10 @@
 #!/usr/bin/bash
-hgsql hg19 -N -e "select chrom,txStart,txEnd,name,score,strand,name2 from refGene" | sort-bed - | gzip > refGene.bed.gz
+#hgsql hg19 -N -e "select chrom,txStart,txEnd,name,score,strand,name2 from refGene" | sort-bed - | gzip > refGene.bed.gz
+
+## Alternate based on GenCode19 and TUSelector
+cd ~/bin/tuSelecter/
+
+./tuSelecter.R -p 5 -o /local/storage/projects/mcf7tamres/annotations/tuSelecter/  /local/storage/data/hg19/all/gencode/gencode.V19.annotation.txtable.out /local/storage/projects/mcf7tamres/dreg/mcf7.plus.bw /local/storage/projects/mcf7tamres/dreg/mcf7.minus.bw
+
+cd /local/storage/projects/mcf7tamres/annotations
+
