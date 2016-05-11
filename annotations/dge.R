@@ -85,34 +85,48 @@ gene_pvals <- cbind(refGene, FDR_TAM= p.adjust(ss$table$PValue), FC_TAM= ss$tabl
 ## MA-plot
 pdf("MAPlot.pdf")
 sign <- which(ss$table$PValue < 0.01)
+maPlot(logAbundance= ss$table$logCPM, logFC= ss$table$logFC, de.tags= sign, pch=19)
+
 #samp <- sample(NROW(gene_pvals), 0.3*NROW(gene_pvals))
 #maPlot(logAbundance= ss$table$logCPM[c(sign, samp)], logFC= ss$table$logFC[c(sign, samp)], de.tags= 1:NROW(sign), pch=19)
 maPlot(logAbundance= ss$table$logCPM, logFC= ss$table$logFC, de.tags= sign, pch=19)
 
 addlab <- function(gene_ID, ...) {
-  ig <- which(gene_pvals$V7 == gene_ID)
+  ig <- which(gene_pvals$GENENAME == gene_ID)
   io <- ig[which.min(gene_pvals$FDR_TAM[ig])]
   text(ss$table$logCPM[io], ss$table$logFC[io], labels= gene_ID, cex= 0.7, pos= 3, ...)
 } 
 
 laball <- function() {
+## E2 REG (Hah et. al. || classical)
 addlab("GREB1")
-addlab("GDNF")
 addlab("PGR")
-addlab("BMP5")
+addlab("ELOVL2")
 
+## Non E2 REG
+addlab("BMP5")
+addlab("C10orf112")
+addlab("PCGEM1")
+
+## Down reg
+addlab("GDNF")
 addlab("CD36")
 addlab("MPPED1")
+addlab("IGFBP5")
 
-#addlab("ESR1", col="white")
-#addlab("ERBB2", col="white")
-#addlab("REL", col="white")
-#addlab("PIK3CA", col="white")
+#addlab("SCIN")
+#addlab("EHF")
+addlab("RP11-369C8.1")
+addlab("RP4-754E20__A.5")
+addlab("FOLH1")
+addlab("SIGLEC6")
+addlab("KCNJ8")
+
 }
 laball()
 
 indx <- which(gene_pvals$FDR_TAM < 1e-10 | ss$table$logCPM > 10)
-maPlot(logAbundance= ss$table$logCPM[indx], logFC= ss$table$logFC[indx], pch=19)
+maPlot(logAbundance= ss$table$logCPM[indx], logFC= ss$table$logFC[indx], pch=19, xlim=c(min(ss$table$logCPM), max(ss$table$logCPM)) )
 laball()
 dev.off()
 
@@ -121,10 +135,12 @@ head(gene_pvals[order(gene_pvals$FDR_BBCA),c(1:3,6:7,10:11)], n=30)
 head(gene_pvals[order(gene_pvals$FDR_BBCA_G11),c(1:3,6:7,12:13)], n=30)
 
 ## Number of genes w/ p< 0.01
-NROW(unique(gene_pvals$V7[gene_pvals$FDR_TAM < 0.01]))
-NROW(unique(gene_pvals$V7[gene_pvals$FDR_BBCA < 0.01]))
+NROW(unique(gene_pvals$GENEID[gene_pvals$FDR_TAM < 0.01]))
+NROW(unique(gene_pvals$GENEID[gene_pvals$FDR_BBCA < 0.01]))
 
-write.table(gene_pvals[order(gene_pvals$FDR_TAM),c(1:3,6:11)], "Signif.Changes.TamRes.tsv", row.names=FALSE, col.names=TRUE, quote=FALSE, sep="\t")
+write.table(gene_pvals[order(gene_pvals$FDR_TAM),c(1:4,6:8,14:19)], "Signif.Changes.TamRes.tsv", row.names=FALSE, col.names=TRUE, quote=FALSE, sep="\t")
+
+## Dotplots.
 
 
 ## SANITY CHECKS.
