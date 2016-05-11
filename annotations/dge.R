@@ -84,7 +84,7 @@ gene_pvals <- cbind(refGene, FDR_TAM= p.adjust(ss$table$PValue), FC_TAM= ss$tabl
 
 ## MA-plot
 pdf("MAPlot.pdf")
-sign <- which(ss$table$PValue < 0.01)
+sign <- which(p.adjust(ss$table$PValue) < 0.01)
 maPlot(logAbundance= ss$table$logCPM, logFC= ss$table$logFC, de.tags= sign, pch=19)
 
 #samp <- sample(NROW(gene_pvals), 0.3*NROW(gene_pvals))
