@@ -107,7 +107,6 @@ dev.off()
 
 head(gene_pvals[order(gene_pvals$FDR_TAM),c(1:3,6:9,14:NCOL(gene_pvals))], n=30)
 head(gene_pvals[order(gene_pvals$FDR_BBCA),c(1:3,6:7,10:11)], n=30)
-head(gene_pvals[order(gene_pvals$FDR_BBCA_G11),c(1:3,6:7,12:13)], n=30)
 
 ## Number of genes w/ p< 0.01
 NROW(unique(gene_pvals$GENEID[gene_pvals$FDR_TAM < 0.01]))
