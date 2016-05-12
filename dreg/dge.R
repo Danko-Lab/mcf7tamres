@@ -39,7 +39,7 @@ G11b<- countTRE(G11_BBCA_pl, G11_BBCA_mn, tres)
 tre_counts <- cbind(B7, C11, H9, G11, B7b, G11b)
 
 ## 
-require(edgeR)
+require(DESeq2)
 PVAL <- 0.01
 
 ## Build experimental design matrix
@@ -48,33 +48,22 @@ tamres   <- c("sen", "sen", "res", "res", "sen", "res")
 bbcatrt  <- c("u", "u", "u", "u", "t", "t")
 data.frame(sampleID, tamres, bbcatrt)
 
-#fitModel <- function() {
-  design <- model.matrix(~tamres+bbcatrt)
-  rownames(design) <- colnames(tre_counts)
+## Create DESeq2 object.
+design <- data.frame(Condition= tamres, Treatment= bbcatrt, row.names=colnames(tre_counts))
+dds <- DESeqDataSetFromMatrix(countData= tre_counts, colData= design, design= ~ Condition)
+dds$Condition <- relevel(dds$Condition, ref="res") ## Set the reference condition as the primary tumor.
+dds <- DESeq(dds)
+res <- results(dds)
 
-  ## Estimate dispersions.
-  dge <- estimateGLMCommonDisp(tre_counts, design, verbose=TRUE)
-  #dge <- estimateGLMTrendedDisp(dge,design)
-
-  ## Fit neg. binom. GLM to sensitive/ resistent.  Compute p-values using LRT.
-  fit <- glmFit(tre_counts,design,dge)
-
-  sen_cont <- makeContrasts(tamressen, levels=design)
-  ss <- glmLRT(fit,contrast=sen_cont)
-
-  ## Fit bbca.
-  bbca_cont <- makeContrasts(bbcatrtu, levels=design)
-  sb <- glmLRT(fit,contrast=bbca_cont)
-
-#  return(ss, )
-#}
+## Fit bbca.
+ddsB <- DESeqDataSetFromMatrix(countData= tre_counts, colData= design, design= ~ Treatment)
+ddsB$Treatment <- relevel(ddsB$Treatment, ref="u") ## Set the reference condition as the primary tumor.
+ddsB <- DESeq(ddsB)
+resB <- results(ddsB)
 
 #ss <- fitModel()
-tre_pvals <- cbind(tres, FDR_TAM= p.adjust(ss$table$PValue), FC_TAM= ss$table$logFC, 
-								FDR_BBCA= p.adjust(sb$table$PValue), FC_BBCA= sb$table$logFC) 
-								#FDR_BBCA_G11= p.adjust(sbg11$table$PValue), FC_BBCA_G11= sbg11$table$logFC)
-
-head(tre_pvals[order(tre_pvals$FDR_TAM),c(1:3,6:9)], n=30)
+tre_pvals <- cbind(refGene, FDR_TAM= res$padj, FC_TAM= res$log2FoldChange,
+                             FDR_BBCA= resB$padj, FC_BBCA= resB$log2FoldChange)
 
 ## Number of genes w/ p< 0.01
 NROW(tre_pvals[tre_pvals$FDR_TAM < 0.01,])
