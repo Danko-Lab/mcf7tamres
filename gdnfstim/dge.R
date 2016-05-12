@@ -3,7 +3,7 @@
 ## Read in refseq genes.
 #refGene <- read.table("refGene.bed.gz")
 refGene <- read.table("../annotations/tuSelecter/final_tus.txt", header=TRUE)
-refGene <- rbind(refGene, read.table("../annotations/tuSelecter/final_tus.ESR1_GREB1.txt", header=TRUE))
+#refGene <- rbind(refGene, read.table("../annotations/tuSelecter/final_tus.ESR1_GREB1.txt", header=TRUE))
 
 refGene <- refGene[grep("random|Un|hap", refGene$TXCHROM, invert=TRUE),]
 refGene <- refGene[(refGene$TXEND-refGene$TXSTART)>4000,]
@@ -44,9 +44,9 @@ countTimePoints <- function(prefix) {
 }
 
 gene_body_counts <- cbind( countTimePoints("B7"), countTimePoints("C11"), countTimePoints("G11"), countTimePoints("H9") )
+save.image("Counts.RData")
 
 ## Count reads in each ...
-
 require(edgeR)
 PVAL <- 0.01
 
@@ -180,7 +180,7 @@ WriteMAPlot <- function(ss, laball, prefix) {
 ## MA-plot
 pdf(paste("MAPlot.",prefix,".pdf", sep=""))
 
-indx <- ss$table$logCPM>0
+indx <- rep(TRUE, NROW(ss)) #ss$table$logCPM>0
 sign <- (p.adjust(ss$table$PValue) < 0.01)
 maPlot(logAbundance= ss$table$logCPM[indx], logFC= ss$table$logFC[indx], de.tags= sign[indx], pch=19)
 

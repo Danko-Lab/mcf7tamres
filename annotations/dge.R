@@ -3,8 +3,10 @@
 ## Read in refseq genes.
 #refGene <- read.table("refGene.bed.gz")
 refGene <- read.table("tuSelecter/final_tus.txt", header=TRUE)
+#refGene <- rbind(refGene, read.table("../annotations/tuSelecter/final_tus.ESR1_GREB1.txt", header=TRUE))
+
 refGene <- refGene[grep("random|Un|hap", refGene$TXCHROM, invert=TRUE),]
-refGene <- refGene[(refGene$TXEND-refGene$TXSTART)>5000,]
+refGene <- refGene[(refGene$TXEND-refGene$TXSTART)>4000,]
 
 bodies <- refGene
 bodies$TXSTART[bodies$TXSTRAND == "+"] <-bodies$TXSTART[bodies$TXSTRAND == "+"]+1000
@@ -40,6 +42,8 @@ C11<- bed6.region.bpQuery.bigWig(C11_pl, C11_mn, bodies, abs.value = TRUE)
 B7b <- bed6.region.bpQuery.bigWig(B7_BBCA_pl, B7_BBCA_mn, bodies, abs.value = TRUE)
 G11b<- bed6.region.bpQuery.bigWig(G11_BBCA_pl, G11_BBCA_mn, bodies, abs.value = TRUE)
 gene_body_counts <- cbind(B7, C11, H9, G11, B7b, G11b)
+
+save.image("Counts.RData")
 
 ## 
 require(edgeR)
@@ -84,12 +88,14 @@ gene_pvals <- cbind(refGene, FDR_TAM= p.adjust(ss$table$PValue), FC_TAM= ss$tabl
 
 ## MA-plot
 pdf("MAPlot.pdf")
-sign <- which(p.adjust(ss$table$PValue) < 0.01)
-maPlot(logAbundance= ss$table$logCPM, logFC= ss$table$logFC, de.tags= sign, pch=19)
+indx <- rep(TRUE, NROW(refGene)) #ss$table$logCPM>0
+
+sign <- (p.adjust(ss$table$PValue) < 0.01)
+maPlot(logAbundance= ss$table$logCPM[indx], logFC= ss$table$logFC[indx], de.tags= sign[indx], pch=19)
 
 #samp <- sample(NROW(gene_pvals), 0.3*NROW(gene_pvals))
 #maPlot(logAbundance= ss$table$logCPM[c(sign, samp)], logFC= ss$table$logFC[c(sign, samp)], de.tags= 1:NROW(sign), pch=19)
-maPlot(logAbundance= ss$table$logCPM, logFC= ss$table$logFC, de.tags= sign, pch=19)
+maPlot(logAbundance= ss$table$logCPM[indx], logFC= ss$table$logFC[indx], de.tags= sign[indx], pch=19)
 
 addlab <- function(gene_ID, ...) {
   ig <- which(gene_pvals$GENENAME == gene_ID)
@@ -101,6 +107,7 @@ laball <- function() {
 ## E2 REG (Hah et. al. || classical)
 addlab("GREB1")
 addlab("PGR")
+addlab("TFF1")
 addlab("ELOVL2")
 
 ## Non E2 REG
