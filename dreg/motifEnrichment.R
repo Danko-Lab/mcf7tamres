@@ -9,21 +9,28 @@ tre_dn_tam <- tres[tres$FDR_TAM < 0.01 & tres$FC_TAM > 0,]
 
 tre_unc <- tres[tres$FDR_TAM > 0.2 & abs(tres$FC_TAM)< 0.25, ]
 
-
-
 #source("center_dREG_site.R")
 tre_up <- tre_up_tam #center_dREG_site(tre_up_tam, "mcf7.plus.bw", "mcf7.minus.bw", readThresh=10)
 tre_dn <- tre_dn_tam #center_dREG_site(tre_dn_tam, "mcf7.plus.bw", "mcf7.minus.bw", readThresh=10)
 tre_unc <- tre_unc   #center_dREG_site(tre_unc, "mcf7.plus.bw", "mcf7.minus.bw", readThresh=10)
 
 require(rtfbsdb)
-hg19 <- "/local/storage/data/hg19/hg19.2bit"
 
-db.human <- CisBP.extdata("Homo_sapiens")
-tfs <- tfbs.createFromCisBP(db.human, file.bigwig.plus= "mcf7.plus.bw", file.bigwig.minus= "mcf7.minus.bw", file.gencode.gtf="/local/storage/data/hg19/all/gencode/gencode.v19.annotation.gtf.gz")
-tfs <- tfbs.getDistanceMatrix(tfs, ncores=25)
-clu <- tfbs.clusterMotifs(tfs, method="agnes", pdf.heatmap="motifs/MCF7.heatmap.pdf")
-use_indx <- tfbs.selectByGeneExp(tfs, clu) 
+createDB <- function() {
+ hg19 <- "/local/storage/data/hg19/hg19.2bit"
+ 
+ db.human <- CisBP.extdata("Homo_sapiens")
+ tfs <- tfbs.createFromCisBP(db.human);
+ 
+ # Clustering... and expression
+ tfs <- tfbs.clusterMotifs(tfs, method="apcluster", ncores=10)
+ tfs <- tfbs.getExpression(tfs, hg19, "/local/storage/data/hg19/all/gencode/gencode.v19.annotation.gtf.gz", "mcf7.plus.bw", "mcf7.minus.bw", ncore=10);
+ tfs <- tfbs.selectByGeneExp(tfs)
+ 
+ save.image(file="APCluster.rdata")
+}
+
+load("APCluster.rdata")
 
 for(i in c(7, 8, 9)) {
  motif_up <- tfbs.compareTFsite(tfs, file.twoBit= hg19, positive.bed= tre_up, negative.bed= tre_unc, use.cluster=clu, threshold=i, gc.correction=TRUE, pv.adj="bonferroni")
