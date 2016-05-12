@@ -62,7 +62,7 @@ ddsB <- DESeq(ddsB)
 resB <- results(ddsB)
 
 #ss <- fitModel()
-tre_pvals <- cbind(refGene, FDR_TAM= res$padj, FC_TAM= res$log2FoldChange,
+tre_pvals <- cbind(tres, FDR_TAM= res$padj, FC_TAM= res$log2FoldChange,
                              FDR_BBCA= resB$padj, FC_BBCA= resB$log2FoldChange)
 
 ## Number of genes w/ p< 0.01
