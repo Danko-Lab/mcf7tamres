@@ -33,8 +33,8 @@ createDB <- function() {
 load("APCluster.rdata")
 
 for(i in c(7, 8, 9)) {
- motif_up <- tfbs.compareTFsite(tfs, file.twoBit= hg19, positive.bed= tre_up, negative.bed= tre_unc, use.cluster=clu, threshold=i, gc.correction=TRUE, pv.adj="bonferroni")
- motif_dn <- tfbs.compareTFsite(tfs, file.twoBit= hg19, positive.bed= tre_dn, negative.bed= tre_unc, use.cluster=clu, threshold=i, gc.correction=TRUE, pv.adj="bonferroni")
+ motif_up <- tfbs.enrichmentTest(tfs, file.twoBit= hg19, positive.bed= tre_up, negative.bed= tre_unc, threshold=i, gc.correction=TRUE, pv.adj="bonferroni")
+ motif_dn <- tfbs.enrichmentTest(tfs, file.twoBit= hg19, positive.bed= tre_dn, negative.bed= tre_unc, threshold=i, gc.correction=TRUE, pv.adj="bonferroni")
 
  print(paste("Log score: ",i,sep=""))
 
