@@ -6,7 +6,7 @@ require(bigWig)
 library(pheatmap)
 
 pth= "/local/storage/projects/mcf7tamres/data/"
-dist <- 5000
+dist <- 4000
 
 ## Load dREG-HD sites.
 hd <- read.table("ERaBS.bed"); hd <- hd[hd[,2]-dist > 0,]
@@ -25,8 +25,8 @@ calcHeatmap<- function(hMarkFile1p, hMarkFile2p, hMarkFile1m, hMarkFile2m, name,
         hCountMatrix2p <- bed.step.bpQuery.bigWig(hMark2p, center.bed(hd, dist, dist), step=step, abs.value=TRUE)
 
 	## Sizes.
-	size1 <- (hMark1p$mean*hMark1p$basesCovered+abs(hMark1m$mean)*hMark1m$basesCovered)
-	size2 <- (hMark2p$mean*hMark2p$basesCovered+abs(hMark2m$mean)*hMark2m$basesCovered)
+	size1 <- (abs(hMark1p$mean)*hMark1p$basesCovered+abs(hMark1m$mean)*hMark1m$basesCovered)
+	size2 <- (abs(hMark2p$mean)*hMark2p$basesCovered+abs(hMark2m$mean)*hMark2m$basesCovered)
 
 	hmat1 <- matrix(unlist(hCountMatrix1p), nrow= NROW(hd), byrow=TRUE)
 	hmat2 <- matrix(unlist(hCountMatrix2p), nrow= NROW(hd), byrow=TRUE)
@@ -47,7 +47,7 @@ calcHeatmap<- function(hMarkFile1p, hMarkFile2p, hMarkFile1m, hMarkFile2m, name,
 	library(pheatmap)
 	if(is.null(hmcols) | is.null(bk)) {
 		print("Computing Heatmap Colors")
-		bk <- seq(min(hmat), max(hmat), 0.01)
+		bk <- c(log(seq(1, 3, 0.01))) #seq(min(hmat), max(hmat), 0.01)
 		hmcols <- colorRampPalette(cols, bias=1)(length(bk)-1) # red
 		png(paste("heatmaps/", name,".scale.png",sep=""), width=400, height=500)
 			pheatmap(rev(bk), cluster_rows = FALSE, cluster_cols = FALSE, col= hmcols, breaks = bk, legend=TRUE, legend_breaks= quantile(bk), legend_labels= signif(exp(quantile(bk)),3), show_rownames=FALSE, show_colnames=FALSE)
@@ -100,8 +100,8 @@ minus_E2<- calcHeatmap("B7_E2_minus.bw", "B7_CTRL_minus.bw", "B7_E2_plus.bw", "B
 tam_plus_E2 <- calcHeatmap("B7_TAM_plus.bw", "B7_CTRL_plus.bw", "B7_TAM_minus.bw", "B7_CTRL_minus.bw", "B7_tam_pl", hmcols=plus_E2$hmcols, bk= plus_E2$bk, hm_order=ord_b7_TAM)
 tam_minus_E2<- calcHeatmap("B7_TAM_minus.bw", "B7_CTRL_minus.bw", "B7_TAM_plus.bw", "B7_CTRL_plus.bw", "B7_tam_mn", hmcols=minus_E2$hmcols, bk= minus_E2$bk,hm_order=ord_b7_TAM)
 
-bbca_plus_E2 <- calcHeatmap("B7_E2_BBCA_plus.bw", "B7_CTRL_BBCA_plus.bw", "B7_E2_BBCA_minus.bw", "B7_CTRL_BBCA_minus.bw", "B7_bb_pl", hmcols=plus_E2$hmcols, bk= plus_E2$bk, hm_order=ord_b7_BB)
-bbca_minus_E2<- calcHeatmap("B7_E2_BBCA_minus.bw", "B7_CTRL_BBCA_minus.bw", "B7_E2_BBCA_plus.bw", "B7_CTRL_BBCA_plus.bw", "B7_bb_mn", hmcols=minus_E2$hmcols, bk= minus_E2$bk,hm_order=ord_b7_BB)
+bbca_plus_E2 <- calcHeatmap("B7_E2_BBCA_plus.bw", "B7_CTRL_plus.bw", "B7_E2_BBCA_minus.bw", "B7_CTRL_minus.bw", "B7_bb_pl", hmcols=plus_E2$hmcols, bk= plus_E2$bk, hm_order=ord_b7_BB)
+bbca_minus_E2<- calcHeatmap("B7_E2_BBCA_minus.bw", "B7_CTRL_minus.bw", "B7_E2_BBCA_plus.bw", "B7_CTRL_plus.bw", "B7_bb_mn", hmcols=minus_E2$hmcols, bk= minus_E2$bk,hm_order=ord_b7_BB)
 
 
 #G11
@@ -111,7 +111,7 @@ g11_minus_E2<- calcHeatmap("G11_E2_minus.bw", "G11_CTRL_minus.bw", "G11_E2_plus.
 g11_tam_plus_E2 <- calcHeatmap("G11_TAM_plus.bw", "G11_CTRL_plus.bw", "G11_TAM_minus.bw", "G11_CTRL_minus.bw", "G11_tam_pl", hmcols=plus_E2$hmcols, bk= plus_E2$bk, hm_order=ord_g11_TAM)
 g11_tam_minus_E2<- calcHeatmap("G11_TAM_minus.bw", "G11_CTRL_minus.bw", "G11_TAM_plus.bw", "G11_CTRL_plus.bw", "G11_tam_mn", hmcols=minus_E2$hmcols, bk= minus_E2$bk,hm_order=ord_g11_TAM)
 
-g11_bbca_plus_E2 <- calcHeatmap("G11_E2_BBCA_plus.bw", "G11_CTRL_BBCA_plus.bw", "G11_E2_BBCA_minus.bw", "G11_CTRL_BBCA_minus.bw", "G11_bb_pl", hmcols=plus_E2$hmcols, bk= plus_E2$bk, hm_order=ord_g11_BB)
-g11_bbca_minus_E2<- calcHeatmap("G11_E2_BBCA_minus.bw", "G11_CTRL_BBCA_minus.bw", "G11_E2_BBCA_plus.bw", "G11_CTRL_BBCA_plus.bw", "G11_bb_mn", hmcols=minus_E2$hmcols, bk= minus_E2$bk,hm_order=ord_g11_BB)
+g11_bbca_plus_E2 <- calcHeatmap("G11_E2_BBCA_plus.bw", "G11_CTRL_plus.bw", "G11_E2_BBCA_minus.bw", "G11_CTRL_minus.bw", "G11_bb_pl", hmcols=plus_E2$hmcols, bk= plus_E2$bk, hm_order=ord_g11_BB)
+g11_bbca_minus_E2<- calcHeatmap("G11_E2_BBCA_minus.bw", "G11_CTRL_minus.bw", "G11_E2_BBCA_plus.bw", "G11_CTRL_plus.bw", "G11_bb_mn", hmcols=minus_E2$hmcols, bk= minus_E2$bk,hm_order=ord_g11_BB)
 
 
