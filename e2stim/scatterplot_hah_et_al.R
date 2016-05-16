@@ -47,9 +47,10 @@ getCounts <- function(prefix) {
 rL <- getCounts("B7")
 rLg11 <- getCounts("G11")
 
-use <- hah$E2.40m.qVal < 0.01 #& abs(b7) > 1
+use <- hah$E2.40m.qVal < 0.05 #& abs(b7) > 1
 up  <- rL$all_hah > 0
 down<- rL$all_hah < 0
+cor.test(rL$Ce[use], rL$all_hah[use], method="spearman")
 plot(rL$Ce[use], rL$all_hah[use]);abline(h=0);abline(v=0)
 plot(rL$Ce[use], rL$Ceb[use]);abline(h=0);abline(v=0)
 plot(rL$Ce[use], rL$Cet[use]);abline(h=0);abline(v=0)
@@ -60,7 +61,7 @@ densScatterplot(rL$Ceb[use], rL$all_hah[use]);abline(h=0);abline(v=0)
 
 #########################
 ## Write out conditioned B7 dataset.
-write <- use & abs(rL$Ce) > 0.75 & (rL$Ce*rL$all_hah)>0
+write <- use #& abs(rL$Ce) > 0 & (rL$Ce*rL$all_hah)>0 #& abs(rL$Ce) > 0.75 
 plot(rL$Ce[write], rL$all_hah[write])
 cor.test(rL$Ce[write], rL$all_hah[write])
 write.table(data.frame(hah[write,1:6], fold.change.B7= rL$Ce[write]), "Hah.B7.changes.tsv", row.names=FALSE, quote=FALSE, sep="\t")

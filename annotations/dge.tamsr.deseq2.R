@@ -34,13 +34,21 @@ B7_BBCA_mn <- load.bigWig(paste(path,"sB7_bbca_mn.bw", sep=""))
 G11_BBCA_pl <- load.bigWig(paste(path,"rG11_bbca_pl.bw", sep=""))
 G11_BBCA_mn <- load.bigWig(paste(path,"rG11_bbca_mn.bw", sep=""))
 
+getCounts <- function(bwplus, bwminus, gb= bodies, rpkm=FALSE) {
+	counts <- bed6.region.bpQuery.bigWig(bwplus, bwminus, gb, abs.value = TRUE)
+	if(rpkm==TRUE) {
+		counts <- counts * (1000/(gb[,3]-gb[,2])) * (1e6/(abs(bwplus$mean)*bwplus$basesCovered+abs(bwminus$mean)*bwminus$basesCovered))
+	}
+	return(counts)
+}
+
 ## Count reads in each ...
-B7 <- bed6.region.bpQuery.bigWig(B7_pl, B7_mn, bodies, abs.value = TRUE)
-G11<- bed6.region.bpQuery.bigWig(G11_pl, G11_mn, bodies, abs.value = TRUE)
-H9 <- bed6.region.bpQuery.bigWig(H9_pl, H9_mn, bodies, abs.value = TRUE)
-C11<- bed6.region.bpQuery.bigWig(C11_pl, C11_mn, bodies, abs.value = TRUE)
-B7b <- bed6.region.bpQuery.bigWig(B7_BBCA_pl, B7_BBCA_mn, bodies, abs.value = TRUE)
-G11b<- bed6.region.bpQuery.bigWig(G11_BBCA_pl, G11_BBCA_mn, bodies, abs.value = TRUE)
+B7 <- getCounts(B7_pl, B7_mn) #bed6.region.bpQuery.bigWig(B7_pl, B7_mn, bodies, abs.value = TRUE)
+G11<- getCounts(G11_pl, G11_mn) #bed6.region.bpQuery.bigWig(G11_pl, G11_mn, bodies, abs.value = TRUE)
+H9 <- getCounts(H9_pl, H9_mn) #bed6.region.bpQuery.bigWig(H9_pl, H9_mn, bodies, abs.value = TRUE)
+C11<- getCounts(C11_pl, C11_mn) #bed6.region.bpQuery.bigWig(C11_pl, C11_mn, bodies, abs.value = TRUE)
+B7b <- getCounts(B7_BBCA_pl, B7_BBCA_mn) #bed6.region.bpQuery.bigWig(B7_BBCA_pl, B7_BBCA_mn, bodies, abs.value = TRUE)
+G11b<- getCounts(G11_BBCA_pl, G11_BBCA_mn) #bed6.region.bpQuery.bigWig(G11_BBCA_pl, G11_BBCA_mn, bodies, abs.value = TRUE)
 gene_body_counts <- cbind(B7, C11, H9, G11, B7b, G11b)
 
 save.image("Counts.RData")
@@ -113,8 +121,6 @@ NROW(unique(gene_pvals$GENEID[gene_pvals$FDR_TAM < 0.01]))
 NROW(unique(gene_pvals$GENEID[gene_pvals$FDR_BBCA < 0.01]))
 
 write.table(gene_pvals[order(gene_pvals$FDR_TAM),c(1:4,6:8,14:NCOL(gene_pvals))], "Signif.Changes.TamRes.tsv", row.names=FALSE, col.names=TRUE, quote=FALSE, sep="\t")
-
-## Dotplots.
 
 
 ## SANITY CHECKS.
