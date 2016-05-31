@@ -16,12 +16,15 @@ tss$V2[tss$V6 == "-"] <- tss$V3[tss$V6 == "-"]-1000
 ## Read in bigWigs.
 require(bigWig)
 
-GC <- function(prefix, path="../data/") {
+GC <- function(prefix, path="../data/", rpkm=FALSE) {
  pl <- load.bigWig(paste(path, prefix, "_plus.bw", sep=""))
  mn <- load.bigWig(paste(path, prefix, "_minus.bw", sep=""))
 
  ## Count reads in each ...
- cnts <- bed6.region.bpQuery.bigWig(pl, mn, bodies, abs.value = TRUE)
+ cnts <- bed6.region.bpQuery.bigWig(pl, mn, bodies, abs.value = TRUE) #/(pl$)
+        if(rpkm==TRUE) {
+                cnts <- cnts * (1000/(bodies[,3]-bodies[,2])) * (1e6/(abs(pl$mean)*pl$basesCovered+abs(mn$mean)*mn$basesCovered))
+        }
  cnts
 }
 

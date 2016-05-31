@@ -6,7 +6,7 @@ refGene <- read.table("../annotations/tuSelecter/final_tus.txt", header=TRUE)
 #refGene <- rbind(refGene, read.table("../annotations/tuSelecter/final_tus.ESR1_GREB1.txt", header=TRUE))
 
 refGene <- refGene[grep("random|Un|hap", refGene$TXCHROM, invert=TRUE),]
-refGene <- refGene[(refGene$TXEND-refGene$TXSTART)>4000,]
+refGene <- refGene[(refGene$TXEND-refGene$TXSTART)>2000,]
 
 bodies <- refGene
 bodies$TXSTART[bodies$TXSTRAND == "+"] <-bodies$TXSTART[bodies$TXSTRAND == "+"]+1000
@@ -47,7 +47,7 @@ gene_body_counts <- cbind( countTimePoints("B7"), countTimePoints("C11"), countT
 save.image("Counts.RData")
 
 ## Count reads in each ...
-require(edgeR)
+require(DESeq2)
 PVAL <- 0.01
 
 ## Build experimental design matrix
@@ -131,7 +131,7 @@ addlab <- function(gene_ID, deRes, genes, ...) {
 }
 
 #gene_pvals[which(gdnf_24h_s$log2FoldChange > 2.5 & gdnf_24h_s$baseMean > 0 & !is.na(gdnf_24h_s$log2FoldChange)),]
-laball_1h <- c("EGR2", "FOSL1", "LRRC15", "EGR3", "NR4A3", "ETS2", "ESR1", "NDRG3", "GPER1")
+laball_1h <- c("EGR1", "EGR2", "FOSL1", "LRRC15", "EGR3", "NR4A3", "ETS2", "ESR1", "NDRG3", "GPER1")
 laball_24h <- c("SHC4", "PLD1", "ERRFI1", "RASGEF1A", "LIPK", "VAV3", "ESR1", "PGR", "GATA4", "RET", "ACACB", "BRIP1")
 
 WriteMAPlot <- function(res, laball, prefix, ylim=c(-3,3)) {

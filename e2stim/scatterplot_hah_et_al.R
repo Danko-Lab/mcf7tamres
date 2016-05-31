@@ -64,7 +64,7 @@ densScatterplot(rL$Ceb[use], rL$all_hah[use]);abline(h=0);abline(v=0)
 write <- use #& abs(rL$Ce) > 0 & (rL$Ce*rL$all_hah)>0 #& abs(rL$Ce) > 0.75 
 plot(rL$Ce[write], rL$all_hah[write])
 cor.test(rL$Ce[write], rL$all_hah[write])
-write.table(data.frame(hah[write,1:6], fold.change.B7= rL$Ce[write]), "Hah.B7.changes.tsv", row.names=FALSE, quote=FALSE, sep="\t")
+write.table(data.frame(hah[write,1:6], fold.change.B7= rL$Ce[write], fold.change.hah= log(hah$E2_40m/ hah$VEH, 2)[write]), "Hah.B7.changes.tsv", row.names=FALSE, quote=FALSE, sep="\t")
 
 
 #########################

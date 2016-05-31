@@ -6,7 +6,7 @@ refGene <- read.table("tuSelecter/final_tus.txt", header=TRUE)
 #refGene <- rbind(refGene, read.table("../annotations/tuSelecter/final_tus.ESR1_GREB1.txt", header=TRUE))
 
 refGene <- refGene[grep("random|Un|hap", refGene$TXCHROM, invert=TRUE),]
-refGene <- refGene[(refGene$TXEND-refGene$TXSTART)>4000,]
+refGene <- refGene[(refGene$TXEND-refGene$TXSTART)>2000,]
 
 bodies <- refGene
 bodies$TXSTART[bodies$TXSTRAND == "+"] <-bodies$TXSTART[bodies$TXSTRAND == "+"]+1000

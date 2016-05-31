@@ -38,6 +38,8 @@ createDB <- function() {
 
 load("APCluster.rdata")
 
+options=list(abline = NULL,title  = "",xlab   = "Order",ylab   = "-log10(p-value)",y.max  = NULL,top.motif.labels = 5,bottom.motif.labels = 5, color.scheme = 2, width = 4, height = 7, zoom.tick = 1, zoom.label = 1,zoom.motif.logo = 1.5, zoom.legend.label=1,zoom.motif.label = 1 );
+
 for(i in c(7, 7.5, 8, 9)) {
  motif_cng<- tfbs.enrichmentTest(tfs, file.twoBit= hg19, positive.bed= sort_bed(rbind(tre_up, tre_dn)), negative.bed= tre_unc, threshold=i, use.cluster=TRUE, gc.correction=TRUE, ncores=20, pv.adj="bonferroni")
  motif_up <- tfbs.enrichmentTest(tfs, file.twoBit= hg19, positive.bed= tre_up, negative.bed= tre_unc, threshold=i, use.cluster=TRUE, gc.correction=TRUE, ncores=20, pv.adj="bonferroni")
@@ -48,17 +50,17 @@ for(i in c(7, 7.5, 8, 9)) {
  print("TREs enriched in any changed sute following Tam Res.")
  print(head(motif_cng$result[motif_cng$result$fe.ratio>1,][order(motif_cng$result$pv.adj[motif_cng$result$fe.ratio>1]),], 10))
  tfbs.reportEnrichment(tfs, motif_cng, file.pdf=paste("Motif.cng.",i,".pdf", sep=""), sig.only=TRUE, report.title="TEST FULL", enrichment.type="enriched", pv.threshold= 0.1);
- tfbs.plotEnrichment(tfs, motif_cng, file.pdf=paste("Motif.cng.QQ.",i,".pdf", sep=""), enrichment.type="enriched", cex=4)
+ tfbs.plotEnrichment(tfs, motif_cng, file.pdf=paste("Motif.cng.QQ.",i,".pdf", sep=""), enrichment.type="enriched", options= options)
 
  print("TRE UP in Tam Res.")
  print(head(motif_up$result[motif_up$result$fe.ratio>1,][order(motif_up$result$pv.adj[motif_up$result$fe.ratio>1]),], 10))
  tfbs.reportEnrichment(tfs, motif_up, file.pdf=paste("Motif.up.",i,".pdf", sep=""), sig.only=TRUE, report.title="TEST FULL", enrichment.type="enriched", pv.threshold= 0.1);
- tfbs.plotEnrichment(tfs, motif_up, file.pdf=paste("Motif.up.QQ.",i,".pdf", sep=""), enrichment.type="enriched")
+ tfbs.plotEnrichment(tfs, motif_up, file.pdf=paste("Motif.up.QQ.",i,".pdf", sep=""), enrichment.type="enriched", options= options)
 
  print("TRE DOWN in Tam Res.")
  print(head(motif_dn$result[motif_dn$result$fe.ratio>1,][order(motif_dn$result$pv.adj[motif_dn$result$fe.ratio>1]),], 10))
  tfbs.reportEnrichment(tfs, motif_dn, file.pdf=paste("Motif.dn.",i,".pdf", sep=""), sig.only=TRUE, report.title="TEST FULL", enrichment.type="enriched", pv.threshold= 0.1);
- tfbs.plotEnrichment(tfs, motif_dn, file.pdf=paste("Motif.dn.QQ.",i,".pdf", sep=""), enrichment.type="enriched")
+ tfbs.plotEnrichment(tfs, motif_dn, file.pdf=paste("Motif.dn.QQ.",i,".pdf", sep=""), enrichment.type="enriched", options= options)
 }
 
 save.image("MCF7db.RData")
