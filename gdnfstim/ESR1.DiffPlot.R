@@ -38,3 +38,25 @@ elongationRate <- polymeraseWaveBW(
 "/local/storage/projects/mcf7tamres/data/MCF-7_B7_GDNF_1_hr_minus.bw",
 ESR, approxDist=50000, returnVal="alldata", prefix="IMG/ESR1.", emissionDistAssumption= "gamma", size=1000)
 
+60- (104 / 2.1) ## Start time, assuming median elongation rate in MCF-7 cells.
+
+## Elongation rate in MCF-7 cells.
+wave40 <- polymeraseWaveBW(
+"/local/storage/data/hg19/mcf7/groseq/MCF7.unt.all_plus.bw",
+"/local/storage/data/hg19/mcf7/groseq/MCF7.unt.all_minus.bw",
+"/local/storage/data/hg19/mcf7/groseq/MCF7.40m.all_plus.bw",
+"/local/storage/data/hg19/mcf7/groseq/MCF7.40m.all_minus.bw",
+ESR, approxDist=20000, returnVal="alldata", prefix="IMG/ESR1-Hah40.", emissionDistAssumption= "gamma", size=1000)
+
+wave10 <- polymeraseWaveBW(
+"/local/storage/data/hg19/mcf7/groseq/MCF7.unt.all_plus.bw",
+"/local/storage/data/hg19/mcf7/groseq/MCF7.unt.all_minus.bw",
+"/local/storage/data/hg19/mcf7/groseq/MCF7.10m.all_plus.bw",
+"/local/storage/data/hg19/mcf7/groseq/MCF7.10m.all_minus.bw",
+ESR, approxDist=50000, returnVal="alldata", prefix="IMG/ESR1-Hah10.", emissionDistAssumption= "gamma", size=1000)
+
+
+## Estimate start time: 
+60- (104/ ((wave40[[2]]$EndWave-wave10[[2]]$EndWave)/1000/30))
+
+
