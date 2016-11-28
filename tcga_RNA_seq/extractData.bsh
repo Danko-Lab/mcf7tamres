@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+# RET ligands: https://en.wikipedia.org/wiki/GDNF_family_of_ligands
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "ESR1" -c
+
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "ESR1" > ESR1.tmp
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]RET[[:space:]]" > RET.tmp
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]GDNF[[:space:]]" > GDNF.tmp
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]NRTN[[:space:]]" > NRTN.tmp
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]ARTN[[:space:]]" > ARTN.tmp
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]PSPN[[:space:]]" > PSPN.tmp
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]EGR1[[:space:]]" > EGR1.tmp
+
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]MSMB[[:space:]]" > MSMB.tmp
+
+

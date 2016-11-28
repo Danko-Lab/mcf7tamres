@@ -25,11 +25,15 @@ tss$TXSTART[tss$TXSTRAND == "-"] <- tss$TXEND[tss$TXSTRAND == "-"]-1000
 ## Read in bigWigs.
 require(bigWig)
 
-countBigWig <- function(prefix, path="../data/") {
+countBigWig <- function(prefix, path="../data/", rpkm=FALSE) {
  pl <- load.bigWig(paste(path, "MCF-7_", prefix, "_plus.bw", sep=""))
  mn <- load.bigWig(paste(path, "MCF-7_", prefix, "_minus.bw", sep=""))
 
  counts <- bed6.region.bpQuery.bigWig(pl, mn, bodies, abs.value = TRUE)
+        if(rpkm==TRUE) {
+                counts <- counts * (1000/(bodies[,3]-bodies[,2])) * (1e6/(abs(pl$mean)*pl$basesCovered+abs(mn$mean)*mn$basesCovered))
+        }
+
  return(counts)
 }
 
@@ -132,7 +136,7 @@ addlab <- function(gene_ID, deRes, genes, ...) {
 
 #gene_pvals[which(gdnf_24h_s$log2FoldChange > 2.5 & gdnf_24h_s$baseMean > 0 & !is.na(gdnf_24h_s$log2FoldChange)),]
 laball_1h <- c("EGR1", "EGR2", "FOSL1", "LRRC15", "EGR3", "NR4A3", "ETS2", "ESR1", "NDRG3", "GPER1")
-laball_24h <- c("SHC4", "PLD1", "ERRFI1", "RASGEF1A", "LIPK", "VAV3", "ESR1", "PGR", "GATA4", "RET", "ACACB", "BRIP1")
+laball_24h <- c("SHC4", "PLD1", "ERRFI1", "RASGEF1A", "LIPK", "VAV3", "ESR1", "PGR", "GATA4", "RET", "ACACB", "BRIP1", "GDNF")
 
 WriteMAPlot <- function(res, laball, prefix, ylim=c(-3,3)) {
 ## MA-plot

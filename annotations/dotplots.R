@@ -40,6 +40,9 @@ source("../lib/circplot.R")
 cd.circplot(log(rpkm_norm[bodies$GENENAME == "RET",],2), c("TamS", "TamS", "TamR", "TamR"), lims=c(3,-3))
 dev.off()
 
+pdf("AIB1.NCOA3.pdf")
+  cd.circplot(log(rpkm_norm[bodies$GENENAME == "NCOA3",],2), c("TamS", "TamS", "TamR", "TamR"), lims=c(3,5))
+dev.off()
 
 ## Get the first 60 kb of gene body.
 bodies60 <- refGene
@@ -84,6 +87,7 @@ cd.circplot(t(log(gdnf_rpkm_norm[bodies$GENENAME == "ELOVL2", gdnf_tamsr=="TamS"
 cd.circplot(t(log(gdnf_rpkm_norm[bodies$GENENAME == "NOS1AP", gdnf_tamsr=="TamS"],2)), gdnf_trt[gdnf_tamsr=="TamS"])
 
 dev.off()
+
 
 #
 
