@@ -1,6 +1,22 @@
 ##
 ## Gets motifs enriched in TREs that change in TAM resistence lines.
 
+createDB <- function() {
+ hg19 <- "/local/storage/data/hg19/hg19.2bit"
+
+ db.human <- CisBP.extdata("Homo_sapiens")
+ tfs <- tfbs.createFromCisBP(db.human);
+
+ # Clustering... and expression
+ tfs <- tfbs.clusterMotifs(tfs, method="apcluster", ncores=10)
+ tfs <- tfbs.getExpression(tfs, hg19, "/local/storage/data/hg19/all/gencode/gencode.v19.annotation.gtf.gz", "mcf7.plus.bw", "mcf7.minus.bw", ncores=10);
+ tfs <- tfbs.selectByGeneExp(tfs)
+
+ save.image(file="APCluster.rdata")
+}
+
+load("APCluster.rdata")
+
 tres <- read.table("TRE.Signif.Changes.TamRes.tsv", header=TRUE)
 #tres <- tres[tres$V5>0.85,]
 
@@ -21,22 +37,6 @@ tre_dn <- sort_bed(tre_dn_tam) #center_dREG_site(tre_dn_tam, "mcf7.plus.bw", "mc
 tre_unc <- sort_bed(tre_unc)   #center_dREG_site(tre_unc, "mcf7.plus.bw", "mcf7.minus.bw", readThresh=10)
 
 require(rtfbsdb)
-
-createDB <- function() {
- hg19 <- "/local/storage/data/hg19/hg19.2bit"
- 
- db.human <- CisBP.extdata("Homo_sapiens")
- tfs <- tfbs.createFromCisBP(db.human);
- 
- # Clustering... and expression
- tfs <- tfbs.clusterMotifs(tfs, method="apcluster", ncores=10)
- tfs <- tfbs.getExpression(tfs, hg19, "/local/storage/data/hg19/all/gencode/gencode.v19.annotation.gtf.gz", "mcf7.plus.bw", "mcf7.minus.bw", ncores=10);
- tfs <- tfbs.selectByGeneExp(tfs)
- 
- save.image(file="APCluster.rdata")
-}
-
-load("APCluster.rdata")
 
 options=list(abline = NULL,title  = "",xlab   = "Order",ylab   = "-log10(p-value)",y.max  = NULL,top.motif.labels = 5,bottom.motif.labels = 5, color.scheme = 2, width = 4, height = 7, zoom.tick = 1, zoom.label = 1,zoom.motif.logo = 1.5, zoom.legend.label=1,zoom.motif.label = 1 );
 

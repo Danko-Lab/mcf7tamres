@@ -1,6 +1,8 @@
 ##
 ## Gets motifs enriched in TREs that change in TAM resistence lines.
 
+load("APCluster.rdata")
+
 tres <- read.table("GDNF_treatment.dREG-HD.tsv", header=TRUE)
 #tres <- tres[tres$V5>0.85,]
 
@@ -36,7 +38,7 @@ createDB <- function() {
  save.image(file="APCluster.rdata")
 }
 
-load("APCluster.rdata")
+## Now do the motif search
 
 options=list(abline = NULL,title  = "",xlab   = "Order",ylab   = "-log10(p-value)",y.max  = NULL,top.motif.labels = 5,bottom.motif.labels = 5, color.scheme = 2, width = 4, height = 7, zoom.tick = 1, zoom.label = 1,zoom.motif.logo = 1.5, zoom.legend.label=1,zoom.motif.label = 1 );
 
@@ -48,20 +50,14 @@ options=list(abline = NULL,title  = "",xlab   = "Order",ylab   = "-log10(p-value
 
  print(paste("Log score: ",i,sep=""))
 
- print("TREs enriched in any changed sute following Tam Res.")
- print(head(motif_cng$result[motif_cng$result$fe.ratio>1,][order(motif_cng$result$pv.adj[motif_cng$result$fe.ratio>1]),], 10))
- tfbs.reportEnrichment(tfs, motif_cng, file.pdf=paste("Motif.cng.",i,".pdf", sep=""), sig.only=TRUE, report.title="TEST FULL", enrichment.type="enriched", pv.threshold= 0.1);
- tfbs.plotEnrichment(tfs, motif_cng, file.pdf=paste("Motif.cng.QQ.",i,".pdf", sep=""), enrichment.type="enriched", options= options)
-
- print("TRE UP in Tam Res.")
- print(head(motif_up$result[motif_up$result$fe.ratio>1,][order(motif_up$result$pv.adj[motif_up$result$fe.ratio>1]),], 10))
- tfbs.reportEnrichment(tfs, motif_up, file.pdf=paste("Motif.up.",i,".pdf", sep=""), sig.only=TRUE, report.title="TEST FULL", enrichment.type="enriched", pv.threshold= 0.1);
- tfbs.plotEnrichment(tfs, motif_up, file.pdf=paste("Motif.up.QQ.",i,".pdf", sep=""), enrichment.type="enriched", options= options)
+ print("Motifs enriched in TREs which change at 1h.")
+ tfbs.reportEnrichment(tfs, motif_1h, file.pdf=paste("Motif.GDNF-1h.",i,".pdf", sep=""), sig.only=TRUE, report.title="TEST FULL", enrichment.type="enriched", pv.threshold= 0.1);
+ tfbs.plotEnrichment(tfs, motif_1h, file.pdf=paste("Motif.GDNF-1h.QQ.",i,".pdf", sep=""), enrichment.type="enriched", options= options)
 
  print("TRE DOWN in Tam Res.")
- print(head(motif_dn$result[motif_dn$result$fe.ratio>1,][order(motif_dn$result$pv.adj[motif_dn$result$fe.ratio>1]),], 10))
- tfbs.reportEnrichment(tfs, motif_dn, file.pdf=paste("Motif.dn.",i,".pdf", sep=""), sig.only=TRUE, report.title="TEST FULL", enrichment.type="enriched", pv.threshold= 0.1);
- tfbs.plotEnrichment(tfs, motif_dn, file.pdf=paste("Motif.dn.QQ.",i,".pdf", sep=""), enrichment.type="enriched", options= options)
+ tfbs.reportEnrichment(tfs, motif_24h, file.pdf=paste("Motif.GDNF-24h.",i,".pdf", sep=""), sig.only=TRUE, report.title="TEST FULL", enrichment.type="enriched", pv.threshold= 0.1);
+ tfbs.plotEnrichment(tfs, motif_24h, file.pdf=paste("Motif.GDNF-24h.QQ.",i,".pdf", sep=""), enrichment.type="enriched", options= options)
+
 #}
 
 save.image("MCF7db.RData")
