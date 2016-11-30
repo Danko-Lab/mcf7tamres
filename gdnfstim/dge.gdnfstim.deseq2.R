@@ -26,29 +26,32 @@ tss$TXSTART[tss$TXSTRAND == "-"] <- tss$TXEND[tss$TXSTRAND == "-"]-250; tss$TXEN
 ## Read in bigWigs.
 require(bigWig)
 
-countBigWig <- function(prefix, path="../data/", rpkm=FALSE) {
+countBigWig <- function(prefix, bed, rpkm=FALSE, path="../data/") {
  pl <- load.bigWig(paste(path, "MCF-7_", prefix, "_plus.bw", sep=""))
  mn <- load.bigWig(paste(path, "MCF-7_", prefix, "_minus.bw", sep=""))
 
- counts <- bed6.region.bpQuery.bigWig(pl, mn, bodies, abs.value = TRUE)
+ counts <- bed6.region.bpQuery.bigWig(pl, mn, bed, abs.value = TRUE)
         if(rpkm==TRUE) {
-                counts <- counts * (1000/(bodies[,3]-bodies[,2])) * (1e6/(abs(pl$mean)*pl$basesCovered+abs(mn$mean)*mn$basesCovered))
+                counts <- counts * (1000/(bed[,3]-bed[,2])) * (1e6/(abs(pl$mean)*pl$basesCovered+abs(mn$mean)*mn$basesCovered))
         }
 
  return(counts)
 }
 
-countTimePoints <- function(prefix) {
-  count0 <- countBigWig(paste(prefix, "_GDNF_0_hr", sep=""))
-  count1 <- countBigWig(paste(prefix, "_GDNF_1_hr", sep=""))
-  count24 <- countBigWig(paste(prefix, "_GDNF_24_hr", sep=""))
+countTimePoints <- function(prefix, bed, rpkm=FALSE) {
+  count0 <- countBigWig(paste(prefix, "_GDNF_0_hr", sep=""), bed, rpkm)
+  count1 <- countBigWig(paste(prefix, "_GDNF_1_hr", sep=""), bed, rpkm)
+  count24 <- countBigWig(paste(prefix, "_GDNF_24_hr", sep=""), bed, rpkm)
 
   ret_value <- cbind(count0, count1, count24)
   colnames(ret_value) <- paste(prefix, c("_0h", "_1h", "_24h"), sep="")
   return(ret_value)
 }
 
-gene_body_counts <- cbind( countTimePoints("B7"), countTimePoints("C11"), countTimePoints("G11"), countTimePoints("H9") )
+gene_body_counts <- cbind( countTimePoints("B7", bodies), countTimePoints("C11", bodies), countTimePoints("G11", bodies), countTimePoints("H9", bodies) )
+gene_body_density<- cbind(countTimePoints("B7", bodies, rpkm=TRUE), countTimePoints("C11", bodies, rpkm=TRUE), countTimePoints("G11", bodies, rpkm=TRUE), countTimePoints("H9", bodies, rpkm=TRUE))
+tss_density<- cbind(countTimePoints("B7", tss, rpkm=TRUE), countTimePoints("C11", tss, rpkm=TRUE), countTimePoints("G11", tss, rpkm=TRUE), countTimePoints("H9", tss, rpkm=TRUE))
+
 save.image("Counts.RData")
 
 ## Count reads in each ...
