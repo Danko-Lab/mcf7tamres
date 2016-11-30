@@ -18,9 +18,10 @@ maxsize <- 60000
 bodies$TXEND[bodies$TXSTRAND == "+" & size>maxsize] <- refGene$TXSTART[bodies$TXSTRAND == "+" & size>maxsize]+maxsize
 bodies$TXSTART[bodies$TXSTRAND == "-" & size>maxsize] <- refGene$TXEND[bodies$TXSTRAND == "-" & size>maxsize]-maxsize
 
+## Now set 250bp boundaries for TSS.
 tss <- refGene
-tss$TXEND[tss$TXSTRAND == "+"] <-tss$TXSTART[tss$TXSTRAND == "+"]+1000
-tss$TXSTART[tss$TXSTRAND == "-"] <- tss$TXEND[tss$TXSTRAND == "-"]-1000
+tss$TXEND[tss$TXSTRAND == "+"] <-tss$TXSTART[tss$TXSTRAND == "+"]+250; tss$TXSTART[tss$TXSTRAND == "+"]<- tss$TXSTART[tss$TXSTRAND == "+"]-250
+tss$TXSTART[tss$TXSTRAND == "-"] <- tss$TXEND[tss$TXSTRAND == "-"]-250; tss$TXEND[tss$TXSTRAND == "-"]<- tss$TXEND[tss$TXSTRAND == "-"]+250
 
 ## Read in bigWigs.
 require(bigWig)
