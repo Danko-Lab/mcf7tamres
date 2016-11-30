@@ -10,13 +10,14 @@ dist <- 10000
 
 ## Load dREG-HD sites of changed promoters.
 genes <- read.table("../gdnfstim/GDNF_treatment.tsv", header=TRUE)
+genes[genes$TXSTRAND=="+","TXEND"] <- genes[genes$TXSTRAND=="+","TXSTART"]+1
+genes[genes$TXSTRAND=="-","TXSTART"] <- genes[genes$TXSTRAND=="-","TXEND"]-1
+
 hdu <- genes[!is.na(genes$FDR_GDNF_1h_S) & genes$FDR_GDNF_1h_S < 0.01 & genes$FC_GDNF_1h_S > 0,]
-hdu[hdu$TXSTRAND=="+","TXEND"] <- hdu[hdu$TXSTRAND=="+","TXSTART"]+1
-hdu[hdu$TXSTRAND=="-","TXSTART"] <- hdu[hdu$TXSTRAND=="-","TXEND"]-1
+hdd <- genes[!is.na(genes$FDR_GDNF_1h_S) & genes$FDR_GDNF_1h_S < 0.01 & genes$FC_GDNF_1h_S < 0,]
 
 hdu  <- hdu[,1:6]
-hdup <- hdu[hdu$TXSTRAND=="+",1:6]
-hdum <- hdu[hdu$TXSTRAND=="-",1:6]
+hdd  <- hdd[,1:6]
 
 calcHeatmap<- function(hd, hMarkFile1p, hMarkFile2p, hMarkFile1m, hMarkFile2m, name, hm_order= NULL, step=100, path=pth, cols= c("#0000FE", "white","#FE0000"), hmcols= NULL, bk= NULL) {
 	print("Counting Reads")
@@ -28,8 +29,8 @@ calcHeatmap<- function(hd, hMarkFile1p, hMarkFile2p, hMarkFile1m, hMarkFile2m, n
         hMark2m <- load.bigWig(paste(path, hMarkFile2m, sep=""))  #"/local/storage/data/hg19/cd4/epiRoadmap_histone/H3K27ac.bw")
 
 	## Get a matrix of counts.
-	hCountMatrix1p <- bed6.step.bpQuery.bigWig(hMark1p, hMark1m, center.bed(hd, dist, dist), step=step, abs.value=TRUE, follow.strand=TRUE)
-        hCountMatrix2p <- bed6.step.bpQuery.bigWig(hMark2p, hMark2m, center.bed(hd, dist, dist), step=step, abs.value=TRUE, follow.strand=TRUE)
+	hCountMatrix1p <- bed6.step.bpQuery.bigWig(hMark1p, hMark1m, center.bed(hd, dist/2, dist), step=step, abs.value=TRUE, follow.strand=TRUE)
+        hCountMatrix2p <- bed6.step.bpQuery.bigWig(hMark2p, hMark2m, center.bed(hd, dist/2, dist), step=step, abs.value=TRUE, follow.strand=TRUE)
 
 	## Sizes.
 	size1 <- (abs(hMark1p$mean)*hMark1p$basesCovered+abs(hMark1m$mean)*hMark1m$basesCovered)
@@ -52,9 +53,10 @@ calcHeatmap<- function(hd, hMarkFile1p, hMarkFile2p, hMarkFile1m, hMarkFile2m, n
 
 	## Write out a heatmap.
 	library(pheatmap)
+	maxVal <- log(max(c(1/exp(min(hmat)), exp(max(hmat)))))#; print(paste("maxVal", maxVal))
 	if(is.null(hmcols) | is.null(bk)) {
 		print("Computing Heatmap Colors")
-		bk <- c(seq(min(hmat), max(hmat), 0.01)) #seq(min(hmat), max(hmat), 0.01)
+		bk <- log(c(seq(1/exp(maxVal), exp(maxVal), 0.01))) #seq(min(hmat), max(hmat), 0.01)
 		hmcols <- colorRampPalette(cols, bias=1)(length(bk)-1) # red
 		png(paste("heatmaps/", name,".scale.png",sep=""), width=400, height=500)
 			pheatmap(rev(bk), cluster_rows = FALSE, cluster_cols = FALSE, col= hmcols, breaks = bk, legend=TRUE, legend_breaks= quantile(bk), legend_labels= signif(exp(quantile(bk)),3), show_rownames=FALSE, show_colnames=FALSE)
@@ -91,21 +93,17 @@ getOrder <- function(hd, b1p, b1m, b2p, b2m) {
 }
 
 ord_b7_GDNF1h <- getOrder(hdu, "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_plus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw")
-
-#ord_b7_GDNF1h_p <- getOrder(hdup, "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_plus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw")
-#ord_b7_GDNF1h_m <- getOrder(hdum, "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_plus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw")
+ord_b7_GDNF1h_dn <- getOrder(hdd, "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_plus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw")
 
 ## Heatmaps
 
 #B7
-plus_E2 <- calcHeatmap(hdu, "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_0_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw", "B7-GDNF-genes-pl", hm_order=ord_b7_GDNF1h)
-minus_E2<- calcHeatmap(hdu, "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw", "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "B7-GDNF-genes-mn", hm_order=ord_b7_GDNF1h)
+plus_E2 <- calcHeatmap(hdu, "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_0_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw", "B7-GDNF-genes-up", hm_order=ord_b7_GDNF1h)
+#minus_E2<- calcHeatmap(hdu, "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw", "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "B7-GDNF-genes-mn", hm_order=ord_b7_GDNF1h)
 
-#plus_E2 <- calcHeatmap(hdup, "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_0_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw", "B7-GDNF-plus--genes-pl", hm_order=ord_b7_GDNF1h_p)
-#minus_E2<- calcHeatmap(hdup, "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw", "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "B7-GDNF-plus--genes-mn", hm_order=ord_b7_GDNF1h_p)
-#
-#plus_E2 <- calcHeatmap(hdum, "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_0_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw", "B7-GDNF-minus--genes-pl", hm_order=ord_b7_GDNF1h_m)
-#minus_E2<- calcHeatmap(hdum, "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw", "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "B7-GDNF-minus--genes-mn", hm_order=ord_b7_GDNF1h_m)
+plus_E2 <- calcHeatmap(hdd, "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_0_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw", "B7-GDNF-genes-dn", hm_order=ord_b7_GDNF1h_dn)
+#minus_E2<- calcHeatmap(hdd, "MCF-7_B7_GDNF_1_hr_minus.bw", "MCF-7_B7_GDNF_0_hr_minus.bw", "MCF-7_B7_GDNF_1_hr_plus.bw", "MCF-7_B7_GDNF_1_hr_minus.bw", "B7-GDNF-genes-mn-dn", hm_order=ord_b7_GDNF1h_dn)
+
 
 
 
