@@ -1,8 +1,9 @@
 ## get correlations between MCF-7 samples
 
 ## Read in refseq genes.
-dreg  <-read.table("mcf7_tamSR.bedgraph.bed.gz")
-dregHD<-read.table("dregHD/mcf7.dREG_HD.bed"); dregHD <- dregHD[dregHD$V3-dregHD$V2 > 0,]
+#dreg  <-read.table("mcf7_tamSR.bedgraph.bed.gz")
+#dregHD<-read.table("dregHD/mcf7.dREG_HD.bed"); dregHD <- dregHD[dregHD$V3-dregHD$V2 > 0,]
+dregHD<-read.table("dREG.HD.rerun.Nov.30.2016/mcf7.bedgraph.gz.bed.gz_dREG_HD_stringent.bed"); dregHD <- dregHD[dregHD$V3-dregHD$V2 > 0,]
 
 tres <- dregHD
 

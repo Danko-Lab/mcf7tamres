@@ -26,22 +26,22 @@ sort_bed <- function(bed) {
   return(bed[ord,])
 }
 
-tre_up_tam <- tres[tres$FDR_TAM < 0.01 & tres$FC_TAM < 0,]
-tre_dn_tam <- tres[tres$FDR_TAM < 0.01 & tres$FC_TAM > 0,]
+tre_up_tam <- tres[!is.na(tres$FDR_TAM) & tres$FDR_TAM < 0.01 & tres$FC_TAM < 0,]
+tre_dn_tam <- tres[!is.na(tres$FDR_TAM) & tres$FDR_TAM < 0.01 & tres$FC_TAM > 0,]
 
-tre_unc <- tres[tres$FDR_TAM > 0.2 & abs(tres$FC_TAM)< 0.25, ]
+tre_unc <- tres[!is.na(tres$FDR_TAM) & tres$FDR_TAM > 0.2 & abs(tres$FC_TAM)< 0.25, ]
 
 #source("center_dREG_site.R")
-tre_up <- sort_bed(tre_up_tam) #center_dREG_site(tre_up_tam, "mcf7.plus.bw", "mcf7.minus.bw", readThresh=10)
-tre_dn <- sort_bed(tre_dn_tam) #center_dREG_site(tre_dn_tam, "mcf7.plus.bw", "mcf7.minus.bw", readThresh=10)
-tre_unc <- sort_bed(tre_unc)   #center_dREG_site(tre_unc, "mcf7.plus.bw", "mcf7.minus.bw", readThresh=10)
+tre_up <- sort_bed(tre_up_tam)[,1:3] #center_dREG_site(tre_up_tam, "mcf7.plus.bw", "mcf7.minus.bw", readThresh=10)
+tre_dn <- sort_bed(tre_dn_tam)[,1:3] #center_dREG_site(tre_dn_tam, "mcf7.plus.bw", "mcf7.minus.bw", readThresh=10)
+tre_unc <- sort_bed(tre_unc)[,1:3]   #center_dREG_site(tre_unc, "mcf7.plus.bw", "mcf7.minus.bw", readThresh=10)
 
 require(rtfbsdb)
 
 options=list(abline = NULL,title  = "",xlab   = "Order",ylab   = "-log10(p-value)",y.max  = NULL,top.motif.labels = 5,bottom.motif.labels = 5, color.scheme = 2, width = 4, height = 7, zoom.tick = 1, zoom.label = 1,zoom.motif.logo = 1.5, zoom.legend.label=1,zoom.motif.label = 1 );
 
 for(i in c(7, 7.5, 8, 9)) {
- motif_cng<- tfbs.enrichmentTest(tfs, file.twoBit= hg19, positive.bed= sort_bed(rbind(tre_up, tre_dn)), negative.bed= tre_unc, threshold=i, use.cluster=TRUE, gc.correction=TRUE, ncores=20, pv.adj="bonferroni")
+ motif_cng<- tfbs.enrichmentTest(tfs, file.twoBit= hg19, positive.bed= sort_bed(rbind(tre_up, tre_dn)), negative.bed= tre_unc, threshold=i, use.cluster=TRUE, gc.correction=TRUE, ncores=20, pv.adj="bonferroni", gc.min.sample= 1500)
  motif_up <- tfbs.enrichmentTest(tfs, file.twoBit= hg19, positive.bed= tre_up, negative.bed= tre_unc, threshold=i, use.cluster=TRUE, gc.correction=TRUE, ncores=20, pv.adj="bonferroni")
  motif_dn <- tfbs.enrichmentTest(tfs, file.twoBit= hg19, positive.bed= tre_dn, negative.bed= tre_unc, threshold=i, use.cluster=TRUE, gc.correction=TRUE, ncores=20, pv.adj="bonferroni")
 
