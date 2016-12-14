@@ -45,8 +45,8 @@ options=list(abline = NULL,title  = "",xlab   = "Order",ylab   = "-log10(p-value
 #for(i in c(7, 7.5, 8, 9)) {
  i <- 7.5
 
- motif_1h  <- tfbs.enrichmentTest(tfs, file.twoBit= hg19, positive.bed= tre_cng_1h, negative.bed= tre_unc, threshold=i, use.cluster=TRUE, gc.correction=TRUE, ncores=4, pv.adj="bonferroni")
- motif_24h <- tfbs.enrichmentTest(tfs, file.twoBit= hg19, positive.bed= tre_cng_24h, negative.bed= tre_unc, threshold=i, use.cluster=TRUE, gc.correction=TRUE, ncores=4, pv.adj="bonferroni")
+ motif_1h  <- tfbs.enrichmentTest(tfs, file.twoBit= hg19, positive.bed= tre_cng_1h, negative.bed= tre_unc, threshold=i, use.cluster=TRUE, gc.correction=TRUE, ncores=4, pv.adj="bonferroni", gc.min.sample= 500)
+ motif_24h <- tfbs.enrichmentTest(tfs, file.twoBit= hg19, positive.bed= tre_cng_24h, negative.bed= tre_unc, threshold=i, use.cluster=TRUE, gc.correction=TRUE, ncores=4, pv.adj="bonferroni", gc.min.sample= 500)
 
  print(paste("Log score: ",i,sep=""))
 
@@ -60,5 +60,4 @@ options=list(abline = NULL,title  = "",xlab   = "Order",ylab   = "-log10(p-value
 
 #}
 
-save.image("MCF7db.RData")
 
