@@ -23,7 +23,9 @@ df$pspn <- sapply(df$Patient, function(x) {mean(rl$PSPN[rl$Patient == x])})
 df$ret  <- sapply(df$Patient, function(x) {mean(r$RET[rl$Patient == x])})
 #df$egr1 <- sapply(df$Patient, function(x) {mean(egr$EGR1[egr$Patient == x])})
 
+#IQRls <- function(x) {(quantile(x, 0.5)-quantile(x, 0))}
 IQRls <- function(x) {(quantile(x, 0.5)-quantile(x, 0))}
+
 
 df$gdnf <- scale(df$gdnf, center=median(df$gdnf), scale=IQRls(df$gdnf))
 df$nrtn <- scale(df$nrtn, center=median(df$nrtn), scale=IQRls(df$nrtn))

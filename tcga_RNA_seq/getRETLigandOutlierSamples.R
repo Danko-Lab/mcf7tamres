@@ -34,14 +34,17 @@ retL <- retL[log(retL$ESR1,10)> ERpos,] ## REMOVE ER- patients
 retL.med <- sapply(1:NCOL(retL), function(i) {median(log(retL[retL[,i]>0,i], 10), na.rm=TRUE)} )
 retL.var <- sapply(1:NCOL(retL), function(i) {var(log(retL[retL[,i]>0,i], 10), na.rm=TRUE)} )
 retL.IQR <- sapply(1:NCOL(retL), function(i) {IQR(log(retL[retL[,i]>0,i], 10), na.rm=TRUE)} )
-retL.2550 <- 2.5*sapply(1:NCOL(retL), function(i) {quantile(log(retL[retL[,i]>0,i], 10), 0.5, na.rm=TRUE)-quantile(log(retL[retL[,i]>0,i], 10), 0.25, na.rm=TRUE)} )
+retL.2550 <- 2.5*sapply(1:NCOL(retL), function(i) {quantile(log(retL[retL[,i]>0,i], 10), 0.5, na.rm=TRUE)-quantile(log(retL[retL[,i]>0,i], 10), 0.25, na.rm=TRUE)}  )
+retL.050 <- sapply(1:NCOL(retL), function(i) {quantile(log(retL[retL[,i]>0,i], 10), 0.5, na.rm=TRUE)-quantile(log(retL[retL[,i]>0,i], 10), 0, na.rm=TRUE)} )
 
-retL.stdZ <- scale(log(retL,10), center=retL.med, scale=sqrt(retL.var))
+retL.stdZ <- scale(log(retL,10), center=retL.med, scale=scale=sqrt(retL.var))
 TH= 1.28 ## >90% of data, assuming standard normal. ##1.645 ## >0.95% of data, assuming standard normal.
 
 #CUTOFF_VALS <- TH*sqrt(retL.var) + retL.med ## Assume standard normal
 
 CUTOFF_VALS <- retL.med + retL.2550 ## median+IQR
+
+#CUTOFF_VALS <- retL.med + retL.050
 
 pdf("Ret.Ligand.Expression.Distribution.pdf")
 
