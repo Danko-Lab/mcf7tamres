@@ -10,6 +10,9 @@ zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]ARTN[[:space:]]" > ARTN.t
 zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]PSPN[[:space:]]" > PSPN.tmp
 zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]EGR1[[:space:]]" > EGR1.tmp
 
-zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]MSMB[[:space:]]" > MSMB.tmp
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]GFRA1[[:space:]]" > GFRA1.tmp
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]GFRA2[[:space:]]" > GFRA2.tmp
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]GFRA3[[:space:]]" > GFRA3.tmp
+zcat BRCA-US.exp_seq.BRCA-US.tsv.gz | grep "[[:space:]]GFRA4[[:space:]]" > GFRA4.tmp
 
 

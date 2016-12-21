@@ -16,12 +16,19 @@ nrtn <- read.dataset("NRTN", donorID)
 artn <- read.dataset("ARTN", donorID)
 pspn <- read.dataset("PSPN", donorID)
 
-retL <- data.frame(GDNF= gdnf$V9, NRTN= nrtn$V9, ARTN= artn$V9, PSPN= pspn$V9, RET= ret$V9, EGR1= egr1$V9, ESR1= esr1$V9)
+gfra1<- read.dataset("GFRA1", donorID)
+gfra2<- read.dataset("GFRA2", donorID)
+gfra3<- read.dataset("GFRA3", donorID)
+gfra4<- read.dataset("GFRA4", donorID)
+
+retL <- data.frame(GDNF= gdnf$V9, NRTN= nrtn$V9, ARTN= artn$V9, PSPN= pspn$V9, RET= ret$V9, EGR1= egr1$V9, ESR1= esr1$V9, GFRA1= gfra1$V9, GFRA2= gfra2$V9, GFRA3= gfra3$V9, GFRA4= gfra4$V9)
 rownames(retL) <- donorID
 cor(retL)
 
 ## Find ER+ samples.
 ERpos <- -5
+
+pc <- 2.208627e-09
 
 pdf("ERpos.pdf")
   hist(log(retL$ESR1,10), 20, main="ESR1", xlab="ESR1 expression"); abline(v=-5, lty="dashed", col="blue")
@@ -62,10 +69,15 @@ pdf("Ret.Ligand.Expression.Distribution.pdf")
 
 dev.off()
 
-sum(log(retL$GDNF,10) > CUTOFF_VALS[1])
-sum(log(retL$NRTN,10) > CUTOFF_VALS[2])
-sum(log(retL$ARTN,10) > CUTOFF_VALS[3])
-sum(log(retL$PSPN,10) > CUTOFF_VALS[4])
+sum(log(retL$GDNF,10) > CUTOFF_VALS[1] & log(retL$NRTN,10) < CUTOFF_VALS[2] &  log(retL$ARTN,10) < CUTOFF_VALS[3] & log(retL$PSPN,10) < CUTOFF_VALS[4])
+sum(log(retL$NRTN,10) > CUTOFF_VALS[2] & log(retL$GDNF,10) < CUTOFF_VALS[1] &  log(retL$ARTN,10) < CUTOFF_VALS[3] & log(retL$PSPN,10) < CUTOFF_VALS[4])
+sum(log(retL$ARTN,10) > CUTOFF_VALS[3] & log(retL$NRTN,10) < CUTOFF_VALS[2] &  log(retL$GDNF,10) < CUTOFF_VALS[1] & log(retL$PSPN,10) < CUTOFF_VALS[4])
+sum(log(retL$PSPN,10) > CUTOFF_VALS[4] & log(retL$NRTN,10) < CUTOFF_VALS[2] &  log(retL$ARTN,10) < CUTOFF_VALS[3] & log(retL$GDNF,10) < CUTOFF_VALS[1])
+
+any <- sum(log(retL$GDNF,10) > CUTOFF_VALS[1] | log(retL$NRTN,10) > CUTOFF_VALS[2] | log(retL$ARTN,10) > CUTOFF_VALS[3] | log(retL$PSPN,10) > CUTOFF_VALS[4]); any
+
+multiple <- data.frame(GDNF= (log(retL$GDNF,10) > CUTOFF_VALS[1]), NRTN= (log(retL$NRTN,10) > CUTOFF_VALS[2]), ARTN= (log(retL$ARTN,10) > CUTOFF_VALS[3]), PSPN= (log(retL$PSPN,10) > CUTOFF_VALS[4]))
+sum(rowSums(multiple) > 1)
 
 sum(log(retL$GDNF,10) > CUTOFF_VALS[1] | log(retL$NRTN,10) > CUTOFF_VALS[2] | log(retL$ARTN,10) > CUTOFF_VALS[3] | log(retL$PSPN,10) > CUTOFF_VALS[4])/ NROW(retL)
 
@@ -79,13 +91,19 @@ getMod <- function(val1, val2) {
   glm(log(val1[val1>0 & val2>0],10)~log(val2[val1>0 & val2>0],10))
 } 
 
-pdf("ESR1.RET.DensityScatterplot.pdf", height=5, width=5)
+pdf("ESR1.RET.coR.DensityScatterplot.pdf", height=5, width=5)
  source("../lib/densScatterplot.R")
  densScatterplot(retL$ESR1, retL$RET, uselog=TRUE, xlab="ESR1", ylab="RET");  mod1 <- getMod(retL$RET, retL$ESR1); abline(mod1)
  densScatterplot(retL$ESR1, retL$GDNF, uselog=TRUE, xlab="ESR1", ylab="GDNF"); #mod1 <- getMod(retL$GDNF, retL$ESR1); abline(mod1)
  densScatterplot(retL$ESR1, retL$NRTN, uselog=TRUE, xlab="ESR1", ylab="NRTN"); mod1 <- getMod(retL$NRTN, retL$ESR1); abline(mod1)
  densScatterplot(retL$ESR1, retL$ARTN, uselog=TRUE, xlab="ESR1", ylab="ARTN"); #mod1 <- getMod(retL$ARTN, retL$ESR1); abline(mod1)
  densScatterplot(retL$ESR1, retL$PSPN, uselog=TRUE, xlab="ESR1", ylab="PSPN"); #mod1 <- getMod(retL$PSPN, retL$ESR1); abline(mod1)
+
+ densScatterplot(retL$ESR1, retL$GFRA1, uselog=TRUE, xlab="ESR1", ylab="GFRA1");  mod1 <- getMod(retL$GFRA1, retL$ESR1); abline(mod1)
+ densScatterplot(retL$ESR1, retL$GFRA2, uselog=TRUE, xlab="ESR1", ylab="GFRA2")
+ densScatterplot(retL$ESR1, retL$GFRA3, uselog=TRUE, xlab="ESR1", ylab="GFRA3")
+ densScatterplot(retL$ESR1, retL$GFRA4, uselog=TRUE, xlab="ESR1", ylab="GFRA4")
+
 dev.off()
 
 pdf("ESR1.EGR1.pdf", height=5, width=5)
@@ -93,5 +111,23 @@ pdf("ESR1.EGR1.pdf", height=5, width=5)
 # densScatterplot(retL$ESR1, retL$EGR1, uselog=TRUE, xlab="ESR1", ylab="EGR1");mod1 <- glm(log(egr1$V9[indx6][ERpos],10)~log(esr1$V9[ERpos],10));abline(mod1)
 dev.off()
 
+## Now make a violin plot.
+require(vioplot)
+pdf("S4B.RETLexpr.TCGA.pdf", height=4, width=8)
+vioplot(log(retL$RET+pc, 10), 
+	log(retL$GFRA1+pc, 10), 
+        log(retL$GDNF+pc, 10),         
 
+	log(retL$GFRA2+pc, 10), 
+        log(retL$NRTN+pc, 10),         
+
+	log(retL$GFRA3+pc, 10), 
+        log(retL$ARTN+pc, 10),
+
+	log(retL$GFRA4+pc, 10), 
+        log(retL$PSPN+pc, 10),
+
+	names=c("RET", "GFRA1", "GDNF", "GFRA2", "NRTN", "GFRA3", "ARTN", "GFRA4", "PSPN"), 
+	col=c("dark green"))
+dev.off()
 
