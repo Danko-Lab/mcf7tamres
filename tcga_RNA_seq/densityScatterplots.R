@@ -20,7 +20,7 @@ sum(esr1$V1 == ret$V1[indx])
 sum(esr1$V1 == gdnf$V1[indx2])
 sum(esr1$V1 == egr1$V1[indx6])
 
-ERpos <- esr1$V9 > 5e-5
+ERpos <- esr1$V9 > 1e-5
 
 sum(esr1$V1[ERpos] == egr1$V1[indx6][ERpos])
 
@@ -47,8 +47,46 @@ pdf("ESR1.RET.DensityScatterplot.pdf", height=5, width=5)
  densScatterplot(esr1$V9, msmb$V9[indx5], uselog=TRUE, xlab="ESR1", ylab="PSPN")
 dev.off()
 
+## Variation on densScatterplot that turns ER- genes gray.
+densScatterplot.GrayERneg <- function(x1, x2, uselog=FALSE, n=256, ...) {
+  df <- data.frame(x1, x2)
+
+  if(uselog) {
+    x <- densCols(log(x1,10),log(x2,10), colramp=colorRampPalette(c("black", "white")))
+  } else {
+    x <- densCols(x1,x2, colramp=colorRampPalette(c("black", "white")))
+  }
+  df$dens <- col2rgb(x)[1,] + 1L
+
+  ## Map densities to colors
+#  cols <-  colorRampPalette(c("#000099", "#00FEFF", "#45FE4F", "#FCFF00", "#FF9400", "#FF3100"))(256)
+  cols <- colorRampPalette(c("dark gray", "#000099", "#45FE4F", "#FCFF00", "#FF9400", "#FF3100"))(n)
+  df$col <- cols[df$dens]
+  df$col[!ERpos] <- "light gray"
+
+  ## Plot it, reordering rows so that densest points are plotted on top
+  if(uselog) {
+    plot(x2~x1, data=df[order(df$dens),], pch=20, col=col, cex=2, log="xy", ...)
+  } else {
+    plot(x2~x1, data=df[order(df$dens),], pch=20, col=col, cex=2, ...)
+  }
+}
+
+##require(groHMM) # In groHMM, but not exported.
+tlsDeming <- function(x,y,d=1) {
+ sxx <- 1/(NROW(x)-1) * sum((x-mean(x))^2)
+ sxy <- 1/(NROW(x)-1) * sum((x-mean(x))*(y-mean(y)))
+ syy <- 1/(NROW(y)-1) * sum((y-mean(y))^2)
+ X <- (syy-d*sxx+sqrt((syy-d*sxx)^2+4*d*(sxy^2)))/(2*sxy)
+ int <- mean(y) - X * mean(x)
+ return(c(int,X))
+}
+
 pdf("ESR1.EGR1.pdf", height=5, width=5)
- densScatterplot(esr1$V9, egr1$V9[indx6], uselog=TRUE, xlab="ESR1", ylab="EGR1")
+ densScatterplot.GrayERneg(esr1$V9, egr1$V9[indx6], uselog=TRUE, xlab="ESR1", ylab="EGR1"); abline(v=1e-5); 
+# densScatterplot.GrayERneg(log(esr1$V9, 10), log(egr1$V9[indx6], 10), uselog=FALSE, xlab="ESR1", ylab="EGR1"); abline(v=-5); 
+ mod1 <- tlsDeming(y= log(egr1$V9[indx6][ERpos],10), x= log(esr1$V9[ERpos],10));abline(mod1)
+
  densScatterplot(esr1$V9[ERpos], egr1$V9[indx6][ERpos], uselog=TRUE, xlab="ESR1", ylab="EGR1");mod1 <- glm(log(egr1$V9[indx6][ERpos],10)~log(esr1$V9[ERpos],10));abline(mod1)
 dev.off()
 
